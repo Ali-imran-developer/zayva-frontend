@@ -2,7 +2,7 @@
 import * as React from "react"
 
 const TOAST_LIMIT = 1
-const TOAST_REMOVE_DELAY = 1000000
+const TOAST_REMOVE_DELAY = 3000
 
 const actionTypes = {
   ADD_TOAST: "ADD_TOAST",
@@ -100,17 +100,15 @@ function dispatch(action) {
   })
 }
 
-function toast({
-  ...props
-}) {
-  const id = genId()
+function toast({ duration = 3000, ...props }) {
+  const id = genId();
 
   const update = (props) =>
     dispatch({
       type: "UPDATE_TOAST",
       toast: { ...props, id },
-    })
-  const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id })
+    });
+  const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id });
 
   dispatch({
     type: "ADD_TOAST",
@@ -119,16 +117,19 @@ function toast({
       id,
       open: true,
       onOpenChange: (open) => {
-        if (!open) dismiss()
+        if (!open) dismiss();
       },
     },
-  })
+  });
+  setTimeout(() => {
+    dismiss();
+  }, duration);
 
   return {
     id: id,
     dismiss,
     update,
-  }
+  };
 }
 
 function useToast() {

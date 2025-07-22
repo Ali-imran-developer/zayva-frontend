@@ -3,6 +3,7 @@ import { Card, CardContent, CardFooter } from "../ui/card";
 import { Button } from "../ui/button";
 import { brandOptionsMap, categoryOptionsMap } from "@/config";
 import { Badge } from "../ui/badge";
+import { ShoppingBasketIcon } from "lucide-react";
 
 function ShoppingProductTile({
   product,
@@ -16,7 +17,7 @@ function ShoppingProductTile({
           <img
             src={product?.image}
             alt={product?.title}
-            className="w-full h-[300px] object-cover rounded-t-lg"
+            className="w-full h-[250px] object-cover rounded-t-lg"
           />
           {product?.totalStock === 0 ? (
             <Badge className="absolute top-2 left-2 bg-red-500 hover:bg-red-600">
@@ -33,7 +34,7 @@ function ShoppingProductTile({
           ) : null}
         </div>
         <CardContent className="p-4">
-          <h2 className="text-xl font-bold mb-2">{product?.title}</h2>
+          <h2 className="text-xl md:text-lg sm:text-sm truncate line-clamp-1 font-bold mb-2">{product?.title}</h2>
           <div className="flex justify-between items-center mb-2">
             <span className="text-[16px] text-muted-foreground">
               {categoryOptionsMap[product?.category]}
@@ -68,6 +69,7 @@ function ShoppingProductTile({
             onClick={() => handleAddtoCart(product?._id, product?.totalStock)}
             className="w-full"
           >
+            <ShoppingBasketIcon className="w-5 h-5 me-2" />
             Add to cart
           </Button>
         )}
