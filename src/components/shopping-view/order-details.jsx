@@ -10,7 +10,7 @@ function ShoppingOrderDetailsView({ orderDetails }) {
   const { user } = useSelector((state) => state.auth);
 
   return (
-    <DialogContent className="sm:max-w-[600px]">
+    <DialogContent className="w-full h-full max-w-none sm:max-w-[600px] sm:h-auto sm:max-h-[600px] overflow-y-auto sm:rounded-lg p-6">
       <div className="grid gap-6">
         <div className="grid gap-2">
           <div className="flex mt-6 items-center justify-between">
@@ -53,14 +53,14 @@ function ShoppingOrderDetailsView({ orderDetails }) {
         <Separator />
         <div className="grid gap-4">
           <div className="grid gap-2">
-            <div className="font-medium">Order Details</div>
+            <div className="font-semibold text-xl mb-2">Order Details</div>
             <ul className="grid gap-3">
               {orderDetails?.cartItems && orderDetails?.cartItems.length > 0
-                ? orderDetails?.cartItems.map((item) => (
-                    <li className="flex items-center justify-between">
-                      <span>Title: {item.title}</span>
-                      <span>Quantity: {item.quantity}</span>
-                      <span>Price: ${item.price}</span>
+                ? orderDetails?.cartItems.map((item, index) => (
+                    <li key={index} className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b pb-2">
+                      <span className="font-semibold text-sm sm:text-base">{item?.title}</span>
+                      <span className="text-sm sm:text-base">{item?.quantity} Item</span>
+                      <span className="text-sm sm:text-base text-gray-700">Rs. {item?.price}</span>
                     </li>
                   ))
                 : null}
@@ -69,8 +69,8 @@ function ShoppingOrderDetailsView({ orderDetails }) {
         </div>
         <div className="grid gap-4">
           <div className="grid gap-2">
-            <div className="font-medium">Shipping Info</div>
-            <div className="grid gap-0.5 text-muted-foreground">
+            <div className="font-semibold text-xl mb-2">Shipping Info</div>
+            <div className="grid gap-0.5 text-gray-800 font-semibold">
               <span>{user.userName}</span>
               <span>{orderDetails?.addressInfo?.address}</span>
               <span>{orderDetails?.addressInfo?.city}</span>

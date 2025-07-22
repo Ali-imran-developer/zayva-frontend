@@ -33,8 +33,6 @@ function AdminOrdersView() {
     dispatch(getAllOrdersForAdmin());
   }, [dispatch]);
 
-  console.log(orderDetails, "orderList");
-
   useEffect(() => {
     if (orderDetails !== null) setOpenDetailsDialog(true);
   }, [orderDetails]);
@@ -44,7 +42,7 @@ function AdminOrdersView() {
       <CardHeader>
         <CardTitle>All Orders</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="w-full overflow-y-auto">
         <Table>
           <TableHeader>
             <TableRow>
@@ -58,11 +56,10 @@ function AdminOrdersView() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {orderList && orderList.length > 0
-              ? orderList.map((orderItem) => (
+            {orderList && orderList?.length > 0 ? orderList?.map((orderItem) => (
                   <TableRow>
                     <TableCell>{orderItem?._id}</TableCell>
-                    <TableCell>{orderItem?.orderDate.split("T")[0]}</TableCell>
+                    <TableCell>{orderItem?.orderDate?.split("T")[0]}</TableCell>
                     <TableCell>
                       <Badge
                         className={`py-1 px-3 ${
@@ -76,7 +73,7 @@ function AdminOrdersView() {
                         {orderItem?.orderStatus}
                       </Badge>
                     </TableCell>
-                    <TableCell>${orderItem?.totalAmount}</TableCell>
+                    <TableCell>Rs. {orderItem?.totalAmount}</TableCell>
                     <TableCell>
                       <Dialog
                         open={openDetailsDialog}
@@ -85,11 +82,7 @@ function AdminOrdersView() {
                           dispatch(resetOrderDetails());
                         }}
                       >
-                        <Button
-                          onClick={() =>
-                            handleFetchOrderDetails(orderItem?._id)
-                          }
-                        >
+                        <Button onClick={() => handleFetchOrderDetails(orderItem?._id)}>
                           View Details
                         </Button>
                         <AdminOrderDetailsView orderDetails={orderDetails} />

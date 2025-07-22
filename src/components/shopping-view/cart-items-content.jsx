@@ -72,48 +72,52 @@ function UserCartItemsContent({ cartItem }) {
   }
 
   return (
-    <div className="flex items-center space-x-4">
-      <img
-        src={cartItem?.image}
-        alt={cartItem?.title}
-        className="w-20 h-20 rounded object-cover"
-      />
-      <div className="flex-1">
-        <h3 className="font-extrabold">{cartItem?.title}</h3>
-        <div className="flex items-center gap-2 mt-1">
-          <Button
-            variant="outline"
-            className="h-8 w-8 rounded-full"
-            size="icon"
-            disabled={cartItem?.quantity === 1}
-            onClick={() => handleUpdateQuantity(cartItem, "minus")}
-          >
-            <Minus className="w-4 h-4" />
-            <span className="sr-only">Decrease</span>
-          </Button>
-          <span className="font-semibold">{cartItem?.quantity}</span>
-          <Button
-            variant="outline"
-            className="h-8 w-8 rounded-full"
-            size="icon"
-            onClick={() => handleUpdateQuantity(cartItem, "plus")}
-          >
-            <Plus className="w-4 h-4" />
-            <span className="sr-only">Decrease</span>
-          </Button>
+    <div className="flex flex-col items-center justify-between md:flex-row lg:flex-row gap-1 md:gap-2 lg:gap-2">
+      <div className="flex items-center gap-2">
+        <div className="">
+          <img
+            src={cartItem?.image}
+            alt={cartItem?.title}
+            className="w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 max-w-full rounded-full border border-gray-300 object-cover"
+          />
+        </div>
+        <div className="flex flex-row md:flex-col lg:flex-col gap-1 lg:gap-2">
+          <h3 className="font-semibold text-xs md:text-base lg:text-base">{cartItem?.title}</h3>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              className="h-6 w-6 rounded-full"
+              size="icon"
+              disabled={cartItem?.quantity === 1}
+              onClick={() => handleUpdateQuantity(cartItem, "minus")}
+            >
+              <Minus className="w-4 h-4" />
+              <span className="sr-only">Decrease</span>
+            </Button>
+            <span className="font-semibold text-sm">{cartItem?.quantity}</span>
+            <Button
+              variant="outline"
+              className="h-6 w-6 rounded-full"
+              size="icon"
+              onClick={() => handleUpdateQuantity(cartItem, "plus")}
+            >
+              <Plus className="w-4 h-4" />
+              <span className="sr-only">Increase</span>
+            </Button>
+          </div>
         </div>
       </div>
-      <div className="flex flex-col items-end">
-        <p className="font-semibold">
-          $
-          {(
+
+      <div className="flex sm:flex-col md:flex-row lg:flex-row items-end sm:items-end justify-between sm:justify-center gap-1 sm:gap-2">
+        <p className="font-semibold text-right text-sm">
+          Rs. {(
             (cartItem?.salePrice > 0 ? cartItem?.salePrice : cartItem?.price) *
             cartItem?.quantity
           ).toFixed(2)}
         </p>
         <Trash
           onClick={() => handleCartItemDelete(cartItem)}
-          className="cursor-pointer mt-1"
+          className="cursor-pointer text-red-600 hover:text-red-800"
           size={20}
         />
       </div>
