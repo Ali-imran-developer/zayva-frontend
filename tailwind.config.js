@@ -1,15 +1,14 @@
-import animate from "tailwindcss-animate";
-import scrollbar from "tailwind-scrollbar";
-
+/* eslint-disable no-undef */
 /** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
   darkMode: ["class"],
   content: [
-    "./pages/**/*.{js,jsx,ts,tsx}",
-    "./components/**/*.{js,jsx,ts,tsx}",
-    "./app/**/*.{js,jsx,ts,tsx}",
-    "./src/**/*.{js,jsx,ts,tsx}",
+    './pages/**/*.{js,jsx}',
+    './components/**/*.{js,jsx}',
+    './app/**/*.{js,jsx}',
+    './src/**/*.{js,jsx}',
   ],
+  prefix: "",
   theme: {
     container: {
       center: true,
@@ -75,5 +74,8 @@ export default {
       },
     },
   },
-  plugins: [animate, scrollbar],
-};
+  plugins: [
+    require("tailwindcss-animate"),
+    require("tailwind-scrollbar"),
+  ],
+}
