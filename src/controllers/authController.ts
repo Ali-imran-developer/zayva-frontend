@@ -1,6 +1,6 @@
 import Cookies from "js-cookie";
 import { decryptData, encryptData } from "../helper-functions/use-auth";
-import { clearAuthSlice, setSession } from "../store/auth-slice";
+// import { clearAuthSlice, setSession } from "../store/auth-slice";
 import { APP_KEY, COOKIE_SECRET } from "../config/constant";
 import store from "../store/store";
 
@@ -17,7 +17,7 @@ class AuthController {
   static setSession(payload: any) {
     const session = this.getSession();
     const newSession = { ...session, ...payload };
-    store.dispatch(setSession(newSession));
+    // store.dispatch(setSession(newSession));
     const encryptedData = encryptData(newSession, COOKIE_SECRET);
     Cookies.set(APP_KEY, encryptedData, {
       expires: 7,
@@ -27,7 +27,7 @@ class AuthController {
   static restoreSession() {
     const session = AuthController.getSession();
     if (session) {
-      store.dispatch(setSession(session));
+      // store.dispatch(setSession(session));
       this.setSession(session);
     }
   }
@@ -48,7 +48,7 @@ class AuthController {
   }
 
   static logout() {
-    store.dispatch(clearAuthSlice());
+    // store.dispatch(clearAuthSlice());
     AuthController.removeSession();
     localStorage.clear();
   }

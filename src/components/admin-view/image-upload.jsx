@@ -1,6 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable no-unused-vars */
-/* eslint-disable react/prop-types */
 import { FileIcon, UploadCloudIcon, XIcon } from "lucide-react";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -8,6 +5,7 @@ import { useEffect, useRef } from "react";
 import { Button } from "../ui/button";
 import axios from "axios";
 import { Skeleton } from "../ui/skeleton";
+import { ensureArray } from "@/helper-functions/use-formater";
 const PORT = import.meta.env.VITE_PORT;
 
 function ProductImageUpload({
@@ -23,8 +21,10 @@ function ProductImageUpload({
   const inputRef = useRef(null);
 
   function handleImageFileChange(event) {
-    const selectedFile = event.target.files?.[0];
-    if (selectedFile) setImageFile(selectedFile);
+    const selectedFiles = Array.from(event.target.files);
+    if (selectedFiles.length > 0) {
+      setImageFile((prev) => [...(prev || []), ...selectedFiles]);
+    }
   }
 
   function handleDragOver(event) {
@@ -33,13 +33,15 @@ function ProductImageUpload({
 
   function handleDrop(event) {
     event.preventDefault();
-    const droppedFile = event.dataTransfer.files?.[0];
-    if (droppedFile) setImageFile(droppedFile);
+    const droppedFiles = Array.from(event.dataTransfer.files);
+    if (droppedFiles.length > 0) {
+      setImageFile((prev) => [...(prev || []), ...droppedFiles]);
+    }
   }
 
-  function handleRemoveImage() {
-    setImageFile(null);
-    if (inputRef.current) {
+  function handleRemoveImage(index) {
+    setImageFile((prev) => prev.filter((_, i) => i !== index));
+    if (inputRef.current && imageFile.length === 1) {
       inputRef.current.value = "";
     }
   }
@@ -47,23 +49,23 @@ function ProductImageUpload({
   async function uploadImageToCloudinary() {
     setImageLoadingState(true);
     const data = new FormData();
-    data.append("my_file", imageFile);
+    imageFile.forEach((file) => { data.append("my_file", file) });
     const response = await axios.post(`${PORT}/api/admin/products/upload-image`, data);
     if (response?.data?.success) {
-      setUploadedImageUrl(response.data.result.url);
-      setImageLoadingState(false);
+      setUploadedImageUrl(response.data.images);
     }
+    setImageLoadingState(false);
   }
 
   useEffect(() => {
-    if (imageFile !== null) uploadImageToCloudinary();
+    if (imageFile && imageFile.length > 0) {
+      uploadImageToCloudinary();
+    }
   }, [imageFile]);
 
   return (
-    <div
-      className={`w-full  mt-4 ${isCustomStyling ? "" : "max-w-md mx-auto"}`}
-    >
-      <Label className="text-lg font-semibold mb-2 block">Upload Image</Label>
+    <div className={`w-full mt-4 ${isCustomStyling ? "" : "max-w-md mx-auto"}`}>
+      <Label className="text-lg font-semibold mb-2 block">Upload Images</Label>
       <div
         onDragOver={handleDragOver}
         onDrop={handleDrop}
@@ -78,8 +80,9 @@ function ProductImageUpload({
           ref={inputRef}
           onChange={handleImageFileChange}
           disabled={isEditMode}
+          multiple
         />
-        {!imageFile ? (
+        {!imageFile || imageFile.length === 0 ? (
           <Label
             htmlFor="image-upload"
             className={`${
@@ -87,25 +90,26 @@ function ProductImageUpload({
             } flex flex-col items-center justify-center h-32 cursor-pointer`}
           >
             <UploadCloudIcon className="w-10 h-10 text-muted-foreground mb-2" />
-            <span>Drag & drop or click to upload image</span>
+            <span>Drag & drop or click to upload images</span>
           </Label>
         ) : imageLoadingState ? (
           <Skeleton className="h-10 bg-gray-100" />
         ) : (
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <FileIcon className="w-8 text-primary mr-2 h-8" />
-            </div>
-            <p className="text-sm font-medium">{imageFile.name}</p>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-muted-foreground hover:text-foreground"
-              onClick={handleRemoveImage}
-            >
-              <XIcon className="w-4 h-4" />
-              <span className="sr-only">Remove File</span>
-            </Button>
+          <div className="space-y-2">
+            {ensureArray(imageFile)?.map((file, index) => (
+              <div key={index} className="flex items-center justify-between border rounded-lg p-2">
+                <div className="flex items-center">
+                  <FileIcon className="w-6 text-primary mr-2 h-6" />
+                  <p className="text-sm font-medium truncate max-w-[200px]">
+                    {file?.name}
+                  </p>
+                </div>
+                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground" onClick={() => handleRemoveImage(index)}>
+                  <XIcon className="w-4 h-4" />
+                  <span className="sr-only">Remove File</span>
+                </Button>
+              </div>
+            ))}
           </div>
         )}
       </div>

@@ -28,6 +28,7 @@ import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
 import { useToast } from "@/components/ui/use-toast";
 import ProductDetailsDialog from "@/components/shopping-view/product-details";
 import { getFeatureImages } from "@/store/common-slice";
+import { ensureArray, ensureObject } from "@/helper-functions/use-formater";
 
 const categoriesWithIcon = [
   { id: "men", label: "Men", icon: ShirtIcon },
@@ -48,13 +49,16 @@ const brandsWithIcon = [
 
 function ShoppingHome() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const { productList, productDetails } = useSelector((state) => state.shopProducts);
+  const { productList, productDetails } = useSelector(
+    (state) => state.shopProducts
+  );
   const { featureImageList } = useSelector((state) => state.commonFeature);
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
   function handleNavigateToListingPage(getCurrentItem, section) {
     sessionStorage.removeItem("filters");
@@ -70,23 +74,25 @@ function ShoppingHome() {
     dispatch(fetchProductDetails(getCurrentProductId));
   }
 
-  function handleAddtoCart(getCurrentProductId) {
-    dispatch(
-      addToCart({
+  const handleAddtoCart = async (getCurrentProductId) => {
+    try {
+      setIsLoading(true);
+      const data = await dispatch(addToCart({
         userId: user?.id,
         productId: getCurrentProductId,
         quantity: 1,
-      })
-    ).then((data) => {
+      }));
       if (data?.payload?.success) {
-        dispatch(fetchCartItems(user?.id));
-        toast({
-          title: "Product is added to cart",
-          duration: 3000,
-        });
+        await dispatch(fetchCartItems(user?.id));
+        toast({ title: "Product is added to cart", duration: 3000 });
       }
-    });
-  }
+    } catch (error) {
+      console.error(error);
+      toast({ title: error?.message || "Something went wrong" });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (productDetails !== null) setOpenDetailsDialog(true);
@@ -115,46 +121,33 @@ function ShoppingHome() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="relative w-full h-[600px] overflow-hidden">
-        {featureImageList && featureImageList.length > 0
-          ? featureImageList.map((slide, index) => (
-              <img
-                src={slide?.image}
-                key={index}
-                className={`${
-                  index === currentSlide ? "opacity-100" : "opacity-0"
-                } absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000`}
+      <div className="relative w-full h-[400px] overflow-hidden">
+        {ensureArray(featureImageList) && ensureArray(featureImageList)?.length > 0
+          ? ensureArray(featureImageList)?.map((slide, index) => (
+              <img src={slide} key={index} alt="Banner"
+                className={`${index === currentSlide ? "opacity-100" : "opacity-0"} absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000`}
               />
             ))
           : null}
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() =>
-            setCurrentSlide(
-              (prevSlide) =>
-                (prevSlide - 1 + featureImageList.length) %
-                featureImageList.length
-            )
-          }
-          className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/80"
-        >
+
+        {/* <Button variant="outline" size="icon" onClick={() => setCurrentSlide((prevSlide) => (prevSlide - 1 + featureImageList.length) % featureImageList.length)}
+          className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/80">
           <ChevronLeftIcon className="w-4 h-4" />
         </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() =>
-            setCurrentSlide(
-              (prevSlide) => (prevSlide + 1) % featureImageList.length
-            )
-          }
-          className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white/80"
-        >
+
+        <Button variant="outline" size="icon" onClick={() => setCurrentSlide((prevSlide) => (prevSlide + 1) % featureImageList.length)}
+          className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white/80">
           <ChevronRightIcon className="w-4 h-4" />
-        </Button>
+        </Button> */}
+
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
+          {ensureArray(featureImageList)?.map((_, index) => (
+            <button key={index} onClick={() => setCurrentSlide(index)} className={`w-3 h-3 rounded-full transition-all duration-300 ${ currentSlide === index ? "bg-black scale-125 shadow-md" : "bg-gray-400/70 hover:bg-gray-300"}`} />
+          ))}
+        </div>
       </div>
-      <section className="py-12 bg-gray-50">
+
+      {/* <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-8">
             Shop by category
@@ -176,9 +169,9 @@ function ShoppingHome() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
-      <section className="py-12 bg-gray-50">
+      {/* <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-8">Shop by Brand</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -196,21 +189,22 @@ function ShoppingHome() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
-      <section className="py-12">
+      <section className="py-6">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8">
-            Feature Products
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {productList && productList.length > 0
-              ? productList.map((productItem, index) => (
+          <h4 className="text-xl font-bold text-start mb-8 text-[#232323]">
+            New Arrivals
+          </h4>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {ensureArray(productList) && ensureArray(productList)?.length > 0
+              ? ensureArray(productList)?.map((productItem, index) => (
                   <ShoppingProductTile
-                    key={index}
+                    item={index}
                     handleGetProductDetails={handleGetProductDetails}
                     product={productItem}
                     handleAddtoCart={handleAddtoCart}
+                    isLoading={isLoading}
                   />
                 ))
               : null}
@@ -220,7 +214,7 @@ function ShoppingHome() {
       <ProductDetailsDialog
         open={openDetailsDialog}
         setOpen={setOpenDetailsDialog}
-        productDetails={productDetails}
+        productDetails={ensureObject(productDetails)}
       />
     </div>
   );

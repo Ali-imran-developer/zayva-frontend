@@ -105,7 +105,7 @@ export const shoppingViewHeaderMenuItems = [
   {
     id: "home",
     label: "Home",
-    path: "/shop/home",
+    path: "/",
   },
   {
     id: "products",
@@ -122,26 +122,26 @@ export const shoppingViewHeaderMenuItems = [
     label: "Women",
     path: "/shop/listing",
   },
-  {
-    id: "kids",
-    label: "Kids",
-    path: "/shop/listing",
-  },
-  {
-    id: "footwear",
-    label: "Footwear",
-    path: "/shop/listing",
-  },
-  {
-    id: "accessories",
-    label: "Accessories",
-    path: "/shop/listing",
-  },
-  {
-    id: "search",
-    label: "Search",
-    path: "/shop/search",
-  },
+  // {
+  //   id: "kids",
+  //   label: "Kids",
+  //   path: "/shop/listing",
+  // },
+  // {
+  //   id: "footwear",
+  //   label: "Footwear",
+  //   path: "/shop/listing",
+  // },
+  // {
+  //   id: "accessories",
+  //   label: "Accessories",
+  //   path: "/shop/listing",
+  // },
+  // {
+  //   id: "search",
+  //   label: "Search",
+  //   path: "/shop/search",
+  // },
 ];
 
 export const categoryOptionsMap = {

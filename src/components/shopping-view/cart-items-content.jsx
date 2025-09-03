@@ -70,19 +70,36 @@ function UserCartItemsContent({ cartItem }) {
       }
     });
   }
+  console.log("@cartItem", cartItem);
 
   return (
     <div className="flex flex-col items-center justify-between md:flex-row lg:flex-row gap-1 md:gap-2 lg:gap-2">
       <div className="flex items-center gap-2">
         <div className="">
           <img
-            src={cartItem?.image}
+            src={cartItem?.images[0] ?? "/product-placeholder.jpg"}
             alt={cartItem?.title}
-            className="w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 max-w-full rounded-full border border-gray-300 object-cover"
+            className="w-12 h-12 md:w-14 md:h-14 lg:w-24 lg:h-20 max-w-full border border-gray-300 object-contain"
           />
         </div>
         <div className="flex flex-row md:flex-col lg:flex-col gap-1 lg:gap-2">
-          <h3 className="font-semibold text-xs md:text-base lg:text-base">{cartItem?.title}</h3>
+          <h3 className="font-medium text-gray-900 text-xs md:text-base lg:text-sm">
+            {cartItem?.title}
+          </h3>
+          <div className="flex items-center justify-start ms-2 gap-6">
+            <p
+              className={`text-xl font-semibold text-gray-800 font-mono ${
+                cartItem?.salePrice > 0 ? "line-through" : ""
+              }`}
+            >
+              Rs.{cartItem?.price}
+            </p>
+            {cartItem?.salePrice > 0 ? (
+              <p className="text-xl font-semibold text-[#2f702e] font-mono">
+                Rs.{cartItem?.salePrice}
+              </p>
+            ) : null}
+          </div>
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
@@ -110,7 +127,8 @@ function UserCartItemsContent({ cartItem }) {
 
       <div className="flex sm:flex-col md:flex-row lg:flex-row items-end sm:items-end justify-between sm:justify-center gap-1 sm:gap-2">
         <p className="font-semibold text-right text-sm">
-          Rs. {(
+          Rs.{" "}
+          {(
             (cartItem?.salePrice > 0 ? cartItem?.salePrice : cartItem?.price) *
             cartItem?.quantity
           ).toFixed(2)}

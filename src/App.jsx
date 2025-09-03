@@ -29,6 +29,7 @@ function App() {
 
   useEffect(() => {
     dispatch(checkAuth());
+
   }, [dispatch]);
 
   if (isLoading) return <Skeleton className="w-[800] bg-black h-[800px] rounded-none" />;
@@ -36,55 +37,45 @@ function App() {
   return (
     <div className="flex flex-col overflow-hidden bg-white">
       <Routes>
-        <Route
-          path="/"
-          element={
-            <CheckAuth
-              isAuthenticated={isAuthenticated}
-              user={user}
-            ></CheckAuth>
-          }
-        />
-        <Route
-          path="/auth"
-          element={
-            <CheckAuth isAuthenticated={isAuthenticated} user={user}>
-              <AuthLayout />
-            </CheckAuth>
-          }
-        >
+        {/* <Route path="/" element={<CheckAuth isAuthenticated={isAuthenticated} user={user}></CheckAuth>} /> */}
+        {/* <Route path="/" element={<ShoppingHome />} /> */}
+        {/* <Route path="/auth" element={<CheckAuth isAuthenticated={isAuthenticated} user={user}><AuthLayout /></CheckAuth>}>
+          <Route path="login" element={<AuthLogin />} />
+          <Route path="register" element={<AuthRegister />} />
+        </Route> */}
+
+        {/* Auth Routes */}
+        <Route path="/auth" element={<AuthLayout />}>
           <Route path="login" element={<AuthLogin />} />
           <Route path="register" element={<AuthRegister />} />
         </Route>
-        <Route
-          path="/admin"
-          element={
-            <CheckAuth isAuthenticated={isAuthenticated} user={user}>
-              <AdminLayout />
-            </CheckAuth>
-          }
-        >
+
+        {/* Admin Routes */}
+        <Route path="/admin" element={
+          // <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+          <CheckAuth isAuthenticated={isAuthenticated} user={user} requireAdmin>
+            <AdminLayout />
+          </CheckAuth>
+        }>
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="products" element={<AdminProducts />} />
           <Route path="orders" element={<AdminOrders />} />
           <Route path="features" element={<AdminFeatures />} />
         </Route>
-        <Route
-          path="/shop"
-          element={
-            <CheckAuth isAuthenticated={isAuthenticated} user={user}>
-              <ShoppingLayout />
-            </CheckAuth>
-          }
-        >
-          <Route path="home" element={<ShoppingHome />} />
-          <Route path="listing" element={<ShoppingListing />} />
-          <Route path="checkout" element={<ShoppingCheckout />} />
-          <Route path="account" element={<ShoppingAccount />} />
-          <Route path="paypal-return" element={<PaypalReturnPage />} />
-          <Route path="payment-success" element={<PaymentSuccessPage />} />
-          <Route path="search" element={<SearchProducts />} />
+
+        {/* User Routes */}
+          {/* <Route path="/shop" element={<CheckAuth isAuthenticated={isAuthenticated} user={user}><ShoppingLayout /></CheckAuth>}> */}
+        <Route path="/" element={<ShoppingLayout />}>
+          <Route index element={<ShoppingHome />} />
+          {/* <Route path="shop/home" element={<ShoppingHome />} /> */}
+          <Route path="shop/listing" element={<ShoppingListing />} />
+          <Route path="shop/checkout" element={<ShoppingCheckout />} />
+          <Route path="shop/account" element={<ShoppingAccount />} />
+          <Route path="shop/paypal-return" element={<PaypalReturnPage />} />
+          <Route path="shop/payment-success" element={<PaymentSuccessPage />} />
+          <Route path="shop/search" element={<SearchProducts />} />
         </Route>
+
         <Route path="/unauth-page" element={<UnauthPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

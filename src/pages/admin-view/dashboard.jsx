@@ -1,5 +1,7 @@
 import ProductImageUpload from "@/components/admin-view/image-upload";
 import { Button } from "@/components/ui/button";
+import Loading from "@/components/ui/loader";
+import { ensureArray } from "@/helper-functions/use-formater";
 import { addFeatureImage, getFeatureImages } from "@/store/common-slice";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,6 +12,7 @@ function AdminDashboard() {
   const [imageLoadingState, setImageLoadingState] = useState(false);
   const dispatch = useDispatch();
   const { featureImageList } = useSelector((state) => state.commonFeature);
+  console.log("featureImageList", featureImageList);
 
   function handleUploadFeatureImage() {
     dispatch(addFeatureImage(uploadedImageUrl)).then((data) => {
@@ -41,19 +44,14 @@ function AdminDashboard() {
         isCustomStyling={true}
       />
       <Button onClick={handleUploadFeatureImage} className="mt-5 w-full">
-        Upload
+        {imageLoadingState ? <Loading /> : "Upload"}
       </Button>
-      {featureImageList && featureImageList.length > 0 && (
+      {ensureArray(featureImageList) && ensureArray(featureImageList)?.length > 0 && (
         <div className="flex flex-col gap-4 mt-5">
-          {featureImageList.map((featureImgItem, index) =>
-            featureImgItem.image !== "" &&
-            featureImgItem.image !== undefined ? (
+          {ensureArray(featureImageList)?.map((featureImgItem, index) =>
+            featureImgItem !== "" && featureImgItem !== undefined ? (
               <div key={index} className="relative">
-                <img
-                  src={featureImgItem.image}
-                  className="w-full h-[300px] object-cover rounded-t-lg"
-                  alt="Feature"
-                />
+                <img src={featureImgItem ?? ""} className="w-full h-[300px] object-cover rounded-t-lg" alt="Feature" />
               </div>
             ) : null
           )}
