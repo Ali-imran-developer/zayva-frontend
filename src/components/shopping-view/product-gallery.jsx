@@ -5,10 +5,10 @@ function ProductImageGallery({ productDetails, isToday }) {
   const [selectedImage, setSelectedImage] = useState(productDetails?.images[0] ?? "/product-placeholder.jpg")
 
   return (
-    <div>
+    <div className="w-full">
       <div className="relative overflow-hidden">
         <img src={selectedImage} alt={productDetails?.title}
-          className="aspect-square w-[700px] h-[400px] object-cover rounded-lg transition-all duration-500 ease-in-out"
+          className="w-full h-auto max-h-[400px] object-cover rounded-none transition-all duration-500 ease-in-out"
         />
 
         {productDetails?.totalStock === 0 ? (
@@ -24,6 +24,7 @@ function ProductImageGallery({ productDetails, isToday }) {
             Sale
           </Badge>
         ) : null}
+
         {isToday && (
           <span className="absolute top-0 left-0 bg-white text-xs font-medium text-gray-800 px-2 py-1">
             New
@@ -31,11 +32,19 @@ function ProductImageGallery({ productDetails, isToday }) {
         )}
       </div>
 
-      <div className="grid grid-cols-4 gap-2 mt-4">
+      <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-2 mt-4">
         {productDetails?.images?.map((img, index) => (
-          <button key={index} onClick={() => setSelectedImage(img)} className={`border rounded-lg overflow-hidden ${selectedImage === img ? "border-black" : "border-gray-300"}`}>
-            <img src={img} alt={`Thumbnail ${index}`}
-              className="w-full h-24 object-cover hover:opacity-80 transition"
+          <button
+            key={index}
+            onClick={() => setSelectedImage(img)}
+            className={`border rounded-lg overflow-hidden ${
+              selectedImage === img ? "border-black" : "border-gray-300"
+            }`}
+          >
+            <img
+              src={img}
+              alt={`Thumbnail ${index}`}
+              className="w-full h-20 sm:h-24 object-cover hover:opacity-80 transition"
             />
           </button>
         ))}

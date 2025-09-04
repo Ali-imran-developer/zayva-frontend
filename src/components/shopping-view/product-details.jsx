@@ -67,32 +67,44 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
 
   return (
     <Dialog open={open} onOpenChange={handleDialogClose}>
-      <DialogContent className="grid grid-cols-2 gap-8 max-w-[90vw] sm:max-w-[80vw] lg:max-w-[70vw] h-[500px] overflow-y-auto">
+      <DialogContent className="grid grid-cols-1 md:grid-cols-2 gap-6  max-w-[95vw] sm:max-w-[90vw] lg:max-w-[70vw]  max-h-[80vh] md:max-h-[90vh] overflow-y-auto">
         <ProductImageGallery isToday={isToday} productDetails={productDetails} />
 
-        <div className="">
+        <div className="px-2 md:px-4">
           <div>
-            <h1 className="text-lg font-medium text-[#232323]">{productDetails?.title ?? ""}</h1>
-            <p className="text-sm py-4 text-center font-medium text-[#474747]">
+            <h1 className="text-lg font-medium text-[#232323]">
+              {productDetails?.title ?? ""}
+            </h1>
+            <p className="text-sm py-4 text-center md:text-left font-medium text-[#474747]">
               {productDetails?.description ?? ""}
             </p>
-            <p className="text-[#e95144] text-sm font-semibold my-2 ms-2 flex items-center gap-2">
+            <p className="text-[#e95144] text-sm font-semibold my-2 flex items-center gap-2">
               <FireIcon size={16} />
               {productDetails?.totalStock ?? 0} In Stock
             </p>
           </div>
-          <div className="my-3 ms-2 space-y-2">
-            <div className="flex items-center gap-3">
+
+          <div className="my-3 space-y-2">
+            <div className="flex flex-wrap items-center gap-3">
               <span className="text-sm font-medium text-gray-700">Availability:</span>
-              {productDetails?.totalStock > 0 ? (<span className="text-sm font-medium text-gray-700">In Stock</span>) : null}
+              {productDetails?.totalStock > 0 ? (
+                <span className="text-sm font-medium text-gray-700">In Stock</span>
+              ) : null}
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               <span className="text-sm font-medium text-gray-700">Product Type:</span>
-              <span className="text-sm font-medium text-gray-700 capitalize">{productDetails?.category ?? ""}</span>
+              <span className="text-sm font-medium text-gray-700 capitalize">
+                {productDetails?.category ?? ""}
+              </span>
             </div>
           </div>
-          <div className="flex items-center justify-start ms-2 gap-6 mt-2">
-            <p className={`text-xl font-semibold text-gray-800 font-mono ${productDetails?.salePrice > 0 ? "line-through" : ""}`}>
+
+          <div className="flex flex-wrap items-center gap-4 mt-2">
+            <p
+              className={`text-xl font-semibold text-gray-800 font-mono ${
+                productDetails?.salePrice > 0 ? "line-through" : ""
+              }`}
+            >
               Rs.{productDetails?.price}
             </p>
             {productDetails?.salePrice > 0 ? (
@@ -102,43 +114,43 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
             ) : null}
           </div>
 
-            <div className="flex items-center gap-3 mt-5">
-              <Button size="icon" variant="outline" onClick={() => setQuantity((prev) => (prev > 1 ? prev - 1 : prev))}>
-                <Minus className="w-4 h-4" />
-              </Button>
+          <div className="flex items-center gap-3 mt-5">
+            <Button size="icon" variant="outline" onClick={() => setQuantity((prev) => (prev > 1 ? prev - 1 : prev))}>
+              <Minus className="w-4 h-4" />
+            </Button>
 
-              <span className="px-4 py-2 border rounded-md text-lg font-medium">
-                {quantity}
-              </span>
+            <span className="px-4 py-2 border rounded-md text-lg font-medium">
+              {quantity}
+            </span>
 
-              <Button size="icon" variant="outline" onClick={() => setQuantity((prev) => prev < productDetails?.totalStock ? prev + 1 : prev)}>
-                <Plus className="w-4 h-4" />
-              </Button>
-            </div>
+            <Button size="icon" variant="outline" onClick={() => setQuantity((prev) => prev < productDetails?.totalStock ? prev + 1 : prev)}>
+              <Plus className="w-4 h-4" />
+            </Button>
+          </div>
 
-          <div className="mt-5 mb-5 group relative">
+          <div className="mt-5 mb-5">
             {productDetails?.totalStock === 0 ? (
               <Button className="w-full opacity-60 cursor-not-allowed">
                 Out of Stock
               </Button>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Button className="bg-black text-white border border-black w-full rounded-none shadow-lg 
                   hover:bg-white hover:text-black transition-all duration-700 ease-in-out delay-150 uppercase"
-                  onClick={() => handleAddToCart(productDetails?._id, productDetails?.totalStock)}>
+                  onClick={() => handleAddToCart(productDetails?._id, productDetails?.totalStock)}
+                >
                   {isLoading ? <Loading /> : "ADD TO CART"}
                 </Button>
 
-                <Button size="icon" className="bg-white p-2 text-black hover:bg-black hover:text-white rounded-full shadow-lg 
+                <Button size="icon" className="hidden lg:flex bg-white p-2 text-black hover:bg-black hover:text-white rounded-full shadow-lg 
                   transition-all duration-700 ease-in-out delay-150">
                   <HeartIcon className="w-8 h-8" />
                 </Button>
               </div>
             )}
           </div>
-          <div className="">
-            <Button className="bg-white text-black border border-black w-full rounded-none shadow-lg 
-            hover:bg-black hover:text-white transition-all duration-700 ease-in-out delay-150 uppercase"
+          <div>
+            <Button className="bg-white text-black border border-black w-full rounded-none shadow-lg hover:bg-black hover:text-white transition-all duration-700 ease-in-out delay-150 uppercase"
               onClick={() => handleAddToCart(productDetails?._id, productDetails?.totalStock)}>
               Buy it now
             </Button>

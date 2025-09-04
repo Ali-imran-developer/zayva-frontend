@@ -70,7 +70,6 @@ function UserCartItemsContent({ cartItem }) {
       }
     });
   }
-  console.log("@cartItem", cartItem);
 
   return (
     <div className="flex flex-col items-center justify-between md:flex-row lg:flex-row gap-1 md:gap-2 lg:gap-2">

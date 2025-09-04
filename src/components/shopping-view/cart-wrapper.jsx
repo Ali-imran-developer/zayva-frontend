@@ -11,22 +11,27 @@ function UserCartWrapper({ cartItems, setOpenCartSheet }) {
    sum + (currentItem?.salePrice > 0 ? currentItem?.salePrice : currentItem?.price) * currentItem?.quantity, 0) : 0;
 
   return (
-    <SheetContent className="sm:max-w-md h-full overflow-y-auto">
+    <SheetContent className="sm:max-w-md h-full flex flex-col">
       <SheetHeader>
         <SheetTitle className="text-lg w-full flex items-start">Shopping Cart</SheetTitle>
       </SheetHeader>
-      <div className="mt-8 space-y-4">
-        {ensureArray(cartItems) && ensureArray(cartItems)?.length > 0 ? ensureArray(cartItems)?.map((item, index) => <UserCartItemsContent cartItem={item} key={index} />) : null}
+
+      <div className="flex-1 mt-8 space-y-4 overflow-y-auto">
+        {ensureArray(cartItems) && ensureArray(cartItems)?.length > 0 ? ensureArray(cartItems)?.map((item, index) => (
+          <UserCartItemsContent cartItem={item} key={index} />
+        ))
+        : null}
       </div>
-      <div className="mt-8 space-y-4">
-        <div className="flex justify-between">
+
+      <div className="border-t pt-4">
+        <div className="flex justify-between mb-4">
           <span className="font-bold">Total</span>
           <span className="font-bold">Rs. {totalCartAmount}</span>
         </div>
+        <Button onClick={() => { navigate("/shop/checkout"); setOpenCartSheet(false) }} className="w-full">
+          Checkout
+        </Button>
       </div>
-      <Button onClick={() => { navigate("/shop/checkout"); setOpenCartSheet(false) }} className="w-full mt-6">
-        Checkout
-      </Button>
     </SheetContent>
   );
 }
