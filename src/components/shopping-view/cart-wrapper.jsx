@@ -11,7 +11,7 @@ function UserCartWrapper({ cartItems, setOpenCartSheet }) {
    sum + (currentItem?.salePrice > 0 ? currentItem?.salePrice : currentItem?.price) * currentItem?.quantity, 0) : 0;
 
   return (
-    <SheetContent className="sm:max-w-md h-full flex flex-col">
+    <SheetContent className="max-w-md h-full flex flex-col">
       <SheetHeader>
         <SheetTitle className="text-lg w-full flex items-start">Shopping Cart</SheetTitle>
       </SheetHeader>

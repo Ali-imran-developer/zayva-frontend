@@ -1,5 +1,26 @@
+import { formatPrice, newProduct } from "@/helper-functions/use-formater";
+import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardFooter } from "../ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
+import { DeleteIcon, EyeIcon, HeartIcon, PencilIcon, X } from "lucide-react";
+import Loading from "../ui/loader";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../ui/alert-dialog";
 
 function AdminProductTile({
   product,
@@ -11,40 +32,88 @@ function AdminProductTile({
   return (
     <Card className="w-full max-w-sm mx-auto">
       <div>
-        <div className="relative">
+        <div className="relative overflow-hidden">
           <img
-            src={product?.image}
-            alt={product?.title}
-            className="w-full h-[300px] object-cover rounded-t-lg"
+            src={product?.images?.[0] ?? "/product-placeholder.jpg"}
+            alt="product-image"
+            className="w-full h-[250px] object-cover transition-opacity duration-500 ease-in-out group-hover:opacity-0"
           />
-        </div>
-        <CardContent>
-          <h2 className="text-xl font-bold mb-2 mt-2">{product?.title}</h2>
-          <div className="flex justify-between items-center mb-2">
-            <span
-              className={`${
-                product?.salePrice > 0 ? "line-through" : ""
-              } text-lg font-semibold text-primary`}
-            >
-              ${product?.price}
-            </span>
-            {product?.salePrice > 0 ? (
-              <span className="text-lg font-bold">${product?.salePrice}</span>
-            ) : null}
-          </div>
-        </CardContent>
-        <CardFooter className="flex justify-between items-center">
+          {product?.images?.[1] && (
+            <img
+              src={product?.images?.[1]}
+              alt="product-image-hover"
+              className="w-full h-[300px] object-cover absolute inset-0 opacity-0 transition-opacity duration-700 ease-in-out delay-150 group-hover:opacity-100"
+            />
+          )}
+
+          {product?.totalStock === 0 ? (
+            <Badge className="absolute top-8 left-0 rounded-none bg-black px-2 text-gray-200">
+              Out Of Stock
+            </Badge>
+          ) : product?.totalStock < 10 ? (
+            <Badge className="absolute top-8 left-0 rounded-none bg-black px-2 text-gray-200">
+              {`Only ${product?.totalStock} items left`}
+            </Badge>
+          ) : product?.salePrice > 0 ? (
+            <Badge className="absolute top-0 left-0 rounded-none bg-black px-2 text-gray-200">
+              Sale
+            </Badge>
+          ) : null}
+
           <Button
+            className="absolute top-0 right-0 cursor-pointer rounded-none bg-black px-2 py-1"
             onClick={() => {
               setOpenCreateProductsDialog(true);
               setCurrentEditedId(product?._id);
               setFormData(product);
             }}
           >
-            Edit
+            <PencilIcon className="w-4 h-4 cursor-pointer hover:cursor-pointer" />
           </Button>
-          <Button onClick={() => handleDelete(product?._id)}>Delete</Button>
-        </CardFooter>
+
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button className="absolute bottom-0 right-0 cursor-pointer rounded-none bg-black px-2 py-1">
+                <X className="w-5 h-5" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will permanently delete {product?.title}.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={() => handleDelete(product?._id)}>
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+        <CardContent>
+          <h2 className="text-sm text-gray-800 text-center font-[sans-serif] line-clamp-2 font-semibold my-3">
+            {product?.title}
+          </h2>
+          <div className="flex justify-center gap-5 items-center mb-2">
+            <span
+              className={`${
+                product?.salePrice > 0 ? "line-through" : ""
+              } text-sm font-bold text-gray-600`}
+            >
+              Rs.{formatPrice(product?.price) ?? 0}
+            </span>
+            {product?.salePrice > 0 && (
+              <span className="text-sm font-bold text-[#becc13]">
+                Rs.{formatPrice(product?.salePrice) ?? 0}
+              </span>
+            )}
+          </div>
+        </CardContent>
+        {/* <CardFooter className="flex justify-between items-center">
+        </CardFooter> */}
       </div>
     </Card>
   );

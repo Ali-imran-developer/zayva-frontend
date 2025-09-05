@@ -80,10 +80,7 @@ function AdminProducts() {
   }
 
   function isFormValid() {
-    return Object.keys(formData)
-      .filter((currentKey) => currentKey !== "averageReview")
-      .map((key) => formData[key] !== "")
-      .every((item) => item);
+    return Object.keys(formData).filter((currentKey) => currentKey !== "averageReview").map((key) => formData[key] !== "").every((item) => item);
   }
 
   useEffect(() => {
@@ -98,17 +95,11 @@ function AdminProducts() {
         </Button>
       </div>
       <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
-        {ensureArray(productList) && ensureArray(productList)?.length > 0
-          ? ensureArray(productList)?.map((productItem) => (
-              <AdminProductTile
-                setFormData={setFormData}
-                setOpenCreateProductsDialog={setOpenCreateProductsDialog}
-                setCurrentEditedId={setCurrentEditedId}
-                product={productItem}
-                handleDelete={handleDelete}
-              />
-            ))
-          : null}
+        {ensureArray(productList) && ensureArray(productList)?.length > 0 ? ensureArray(productList)?.map((productItem) => (
+          <AdminProductTile setFormData={setFormData} setOpenCreateProductsDialog={setOpenCreateProductsDialog} 
+            setCurrentEditedId={setCurrentEditedId} product={productItem} handleDelete={handleDelete} />
+          ))
+        : null}
       </div>
       <Sheet
         open={openCreateProductsDialog}

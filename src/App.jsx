@@ -13,7 +13,7 @@ import ShoppingHome from "./pages/shopping-view/home";
 import ShoppingListing from "./pages/shopping-view/listing";
 import ShoppingCheckout from "./pages/shopping-view/checkout";
 import ShoppingAccount from "./pages/shopping-view/account";
-import CheckAuth from "./components/common/check-auth";
+// import CheckAuth from "./components/common/check-auth";
 import UnauthPage from "./pages/unauth-page";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
@@ -22,27 +22,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import PaypalReturnPage from "./pages/shopping-view/paypal-return";
 import PaymentSuccessPage from "./pages/shopping-view/payment-success";
 import SearchProducts from "./pages/shopping-view/search";
+import ProtectedRoute from "./components/common/check-auth";
 
 function App() {
-  const { user, isAuthenticated, isLoading } = useSelector((state) => state.auth);
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(checkAuth());
-
-  }, [dispatch]);
-
-  if (isLoading) return <Skeleton className="w-[800] bg-black h-[800px] rounded-none" />;
+  // const { user, isAuthenticated, isLoading } = useSelector((state) => state.auth);
+  // if (isLoading) return <Skeleton className="w-[800] bg-black h-[800px] rounded-none" />;
 
   return (
     <div className="flex flex-col overflow-hidden bg-white">
       <Routes>
-        {/* <Route path="/" element={<CheckAuth isAuthenticated={isAuthenticated} user={user}></CheckAuth>} /> */}
-        {/* <Route path="/" element={<ShoppingHome />} /> */}
-        {/* <Route path="/auth" element={<CheckAuth isAuthenticated={isAuthenticated} user={user}><AuthLayout /></CheckAuth>}>
-          <Route path="login" element={<AuthLogin />} />
-          <Route path="register" element={<AuthRegister />} />
-        </Route> */}
 
         {/* Auth Routes */}
         <Route path="/auth" element={<AuthLayout />}>
@@ -51,12 +39,7 @@ function App() {
         </Route>
 
         {/* Admin Routes */}
-        <Route path="/admin" element={
-          // <CheckAuth isAuthenticated={isAuthenticated} user={user}>
-          <CheckAuth isAuthenticated={isAuthenticated} user={user} requireAdmin>
-            <AdminLayout />
-          </CheckAuth>
-        }>
+        <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="products" element={<AdminProducts />} />
           <Route path="orders" element={<AdminOrders />} />
@@ -64,10 +47,9 @@ function App() {
         </Route>
 
         {/* User Routes */}
-          {/* <Route path="/shop" element={<CheckAuth isAuthenticated={isAuthenticated} user={user}><ShoppingLayout /></CheckAuth>}> */}
-        <Route path="/" element={<ShoppingLayout />}>
+        <Route path="/" element={<ProtectedRoute><ShoppingLayout /></ProtectedRoute>}>
           <Route index element={<ShoppingHome />} />
-          {/* <Route path="shop/home" element={<ShoppingHome />} /> */}
+          <Route path="/register" element={<AuthRegister />} />
           <Route path="shop/listing" element={<ShoppingListing />} />
           <Route path="shop/checkout" element={<ShoppingCheckout />} />
           <Route path="shop/account" element={<ShoppingAccount />} />

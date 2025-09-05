@@ -1,13 +1,15 @@
-import { AlignJustify, LogOut } from "lucide-react";
+import { AlignJustify, LogOut, LogOutIcon, User2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { useDispatch } from "react-redux";
 import { logoutUser } from "@/store/auth-slice";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog";
+import { useAuth } from "@/hooks/useAuth";
 
 function AdminHeader({ setOpen }) {
-  const dispatch = useDispatch();
+  const { handleLogout } = useAuth();
 
-  function handleLogout() {
-    dispatch(logoutUser());
+  const handleLogoutUser = () => {
+    handleLogout();
   }
 
   return (
@@ -16,14 +18,26 @@ function AdminHeader({ setOpen }) {
         <AlignJustify />
         <span className="sr-only">Toggle Menu</span>
       </Button>
+
       <div className="flex flex-1 justify-end">
-        <Button
-          onClick={handleLogout}
-          className="inline-flex gap-2 items-center rounded-md px-4 py-2 text-sm font-medium shadow"
-        >
-          <LogOut />
-          Logout
-        </Button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button className="cursor-pointer px-3">
+              <User2 className="w-6 h-6" />
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure to logout?</AlertDialogTitle>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleLogoutUser}>
+                Logout
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </header>
   );

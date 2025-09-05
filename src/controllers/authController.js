@@ -1,8 +1,9 @@
-import Cookies from "js-cookie";
 import { decryptData, encryptData } from "../helper-functions/use-auth";
-// import { clearAuthSlice, setSession } from "../store/auth-slice";
+import { clearAuthSlice, setSession } from "../stores/slices/auth-slice";
 import { APP_KEY, COOKIE_SECRET } from "../config/constant";
 import store from "../store/store";
+import { apiRequest } from "./api-controller";
+import Cookies from "js-cookie";
 
 class AuthController {
   static getSession = () => {
@@ -14,10 +15,10 @@ class AuthController {
     return decrypted;
   };
 
-  static setSession(payload: any) {
+  static setSession(payload) {
     const session = this.getSession();
     const newSession = { ...session, ...payload };
-    // store.dispatch(setSession(newSession));
+    store.dispatch(setSession(newSession));
     const encryptedData = encryptData(newSession, COOKIE_SECRET);
     Cookies.set(APP_KEY, encryptedData, {
       expires: 7,
@@ -27,18 +28,18 @@ class AuthController {
   static restoreSession() {
     const session = AuthController.getSession();
     if (session) {
-      // store.dispatch(setSession(session));
+      store.dispatch(setSession(session));
       this.setSession(session);
     }
   }
 
-  static getLocalStorage = (key: string) => {
+  static getLocalStorage = (key) => {
     const data = localStorage.getItem(key);
     return data ? JSON.parse(data) : null;
   };
 
-  static setLocalStorage(key: string, data: any) {
-    const existingData = JSON.parse(localStorage.getItem(key)!);
+  static setLocalStorage(key, data) {
+    const existingData = JSON.parse(localStorage.getItem(key));
     const updatedData = { ...existingData, ...data };
     localStorage.setItem(key, JSON.stringify(updatedData));
   }
@@ -48,10 +49,18 @@ class AuthController {
   }
 
   static logout() {
-    // store.dispatch(clearAuthSlice());
+    store.dispatch(clearAuthSlice());
     AuthController.removeSession();
     localStorage.clear();
   }
+
+  static registerUser(payload) {
+    return apiRequest("post", "/api/auth/register", payload);
+  }  
+
+  static loginUser(payload) {
+    return apiRequest("post", "/api/auth/login", payload);
+  }  
 }
 
 export default AuthController;

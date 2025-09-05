@@ -1,52 +1,16 @@
-/* eslint-disable react/jsx-key */
-import { Button } from "@/components/ui/button";
-import {
-  Airplay,
-  BabyIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  CloudLightning,
-  Heater,
-  Images,
-  Shirt,
-  ShirtIcon,
-  ShoppingBasket,
-  UmbrellaIcon,
-  WashingMachine,
-  WatchIcon,
-} from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchAllFilteredProducts,
-  fetchProductDetails,
-} from "@/store/shop/products-slice";
+import { fetchAllFilteredProducts, fetchProductDetails } from "@/store/shop/products-slice";
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
 import { useNavigate } from "react-router-dom";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
-import { useToast } from "@/components/ui/use-toast";
 import ProductDetailsDialog from "@/components/shopping-view/product-details";
-import { getFeatureImages } from "@/store/common-slice";
 import { ensureArray, ensureObject } from "@/helper-functions/use-formater";
 import Banners from "@/components/shopping-view/banners";
 import { featureImageList } from "@/data/banners-data";
-
-const categoriesWithIcon = [
-  { id: "men", label: "Men", icon: ShirtIcon },
-  { id: "women", label: "Women", icon: CloudLightning },
-  { id: "kids", label: "Kids", icon: BabyIcon },
-  { id: "accessories", label: "Accessories", icon: WatchIcon },
-  { id: "footwear", label: "Footwear", icon: UmbrellaIcon },
-];
-
-const brandsWithIcon = [
-  { id: "nike", label: "Nike", icon: Shirt },
-  { id: "adidas", label: "Adidas", icon: WashingMachine },
-  { id: "puma", label: "Puma", icon: ShoppingBasket },
-  { id: "levi", label: "Levi's", icon: Airplay },
-  { id: "zara", label: "Zara", icon: Images },
-  { id: "h&m", label: "H&M", icon: Heater },
-];
+import Loading from "@/components/ui/loader";
+import { getGuestId } from "@/helper-functions/use-auth";
+import toast from "react-hot-toast";
 
 function ShoppingHome() {
   const { productList, productDetails } = useSelector((state) => state.shopProducts);
@@ -54,38 +18,38 @@ function ShoppingHome() {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-
-  function handleNavigateToListingPage(getCurrentItem, section) {
-    sessionStorage.removeItem("filters");
-    const currentFilter = {
-      [section]: [getCurrentItem.id],
-    };
-
-    sessionStorage.setItem("filters", JSON.stringify(currentFilter));
-    navigate(`/shop/listing`);
-  }
 
   function handleGetProductDetails(getCurrentProductId) {
     dispatch(fetchProductDetails(getCurrentProductId));
   }
 
   const handleAddtoCart = async (getCurrentProductId) => {
+    console.log("getCurrentProductId", getCurrentProductId);
     try {
       setIsLoading(true);
-      const data = await dispatch(addToCart({
-        userId: user?.id,
-        productId: getCurrentProductId,
-        quantity: 1,
-      }));
+      const userId = user?.id;
+      const guestId = !userId ? getGuestId() : null;
+      console.log("guestId inside function: ", guestId);
+      const data = await dispatch(
+        addToCart({
+          userId,
+          guestId,
+          productId: getCurrentProductId,
+          quantity: 1,
+        })
+      );
       if (data?.payload?.success) {
-        await dispatch(fetchCartItems(user?.id));
-        toast({ title: "Product is added to cart", duration: 3000 });
+        if (userId) {
+          await dispatch(fetchCartItems({ userId }));
+        } else {
+          await dispatch(fetchCartItems({ guestId }));
+        }
+        toast.success(data.payload.message);
       }
     } catch (error) {
       console.error(error);
-      toast({ title: error?.message || "Something went wrong" });
+      toast.error(error?.message);
     } finally {
       setIsLoading(false);
     }
@@ -93,6 +57,7 @@ function ShoppingHome() {
 
   useEffect(() => {
     if (productDetails !== null) setOpenDetailsDialog(true);
+
   }, [productDetails]);
 
   useEffect(() => {
@@ -102,10 +67,6 @@ function ShoppingHome() {
         sortParams: "price-lowtohigh",
       })
     );
-  }, [dispatch]);
-
-  useEffect(() => {
-    dispatch(getFeatureImages());
   }, [dispatch]);
 
   return (
@@ -118,17 +79,10 @@ function ShoppingHome() {
             New Arrivals
           </h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {ensureArray(productList) && ensureArray(productList)?.length > 0
-              ? ensureArray(productList)?.map((productItem, index) => (
-                  <ShoppingProductTile
-                    item={index}
-                    handleGetProductDetails={handleGetProductDetails}
-                    product={productItem}
-                    handleAddtoCart={handleAddtoCart}
-                    isLoading={isLoading}
-                  />
-                ))
-              : "No Products Available"}
+            {ensureArray(productList) && ensureArray(productList)?.length > 0 ? ensureArray(productList)?.map((productItem, index) => (
+              <ShoppingProductTile item={index} handleGetProductDetails={handleGetProductDetails} product={productItem} handleAddtoCart={handleAddtoCart} isLoading={isLoading} />
+              )) : <div className="max-w-full w-full p-2 flex items-center justify-center bg-black"><Loading /></div>
+            }
           </div>
         </div>
       </section>

@@ -25,6 +25,7 @@ import { fetchCartItems } from "@/store/shop/cart-slice";
 import CartIcon from "../icons/cart";
 import AccountIcon from "../icons/account";
 import SearchInput from "../ui/search-input";
+import LoginWrapper from "./login-wrapper";
 
 function MenuItems() {
   const navigate = useNavigate();
@@ -93,6 +94,7 @@ function HeaderRightContent() {
   const { user } = useSelector((state) => state.auth);
   const { cartItems } = useSelector((state) => state.shopCart);
   const [openCartSheet, setOpenCartSheet] = useState(false);
+  const [loginSheet, setLoginSheet] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -133,64 +135,13 @@ function HeaderRightContent() {
         />
       </Sheet>
 
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <div className="relative group cursor-pointer p-2">
-            <AccountIcon className="w-6 h-6 lg:w-7 lg:h-7 transition-all duration-300 ease-in-out group-hover:shadow-lg group-hover:scale-110" />
-          </div>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent side="left" className="w-56 lg:w-64 p-2 shadow-xl border-0 bg-white/95 backdrop-blur-sm mr-2 lg:mr-0">
-          <DropdownMenuLabel className="text-center py-2 lg:py-3 border-b border-gray-100">
-            <div className="flex flex-col items-center gap-1 lg:gap-2">
-              <Avatar className="w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-blue-600 to-purple-600">
-                <AvatarFallback className="bg-gradient-to-br from-blue-600 to-purple-600 text-white font-bold text-sm lg:text-base">
-                  {user?.userName[0].toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="font-semibold text-gray-900 text-sm lg:text-base">{user?.userName}</p>
-                <p className="text-xs text-gray-500">Welcome back!</p>
-              </div>
-            </div>
-          </DropdownMenuLabel>
-          
-          <div className="py-1 lg:py-2">
-            <DropdownMenuItem 
-              onClick={() => navigate("/shop/account")}
-              className="
-                flex items-center gap-2 lg:gap-3 px-2 lg:px-3 py-2 lg:py-3 rounded-lg
-                transition-all duration-200 ease-in-out
-                hover:bg-blue-50 hover:text-blue-700
-                cursor-pointer group
-              "
-            >
-              <UserCog className="h-4 w-4 lg:h-5 lg:w-5 transition-transform duration-200 group-hover:rotate-12" />
-              <div>
-                <p className="font-medium text-sm lg:text-base">Account Settings</p>
-                <p className="text-xs text-gray-500 hidden lg:block">Manage your profile</p>
-              </div>
-            </DropdownMenuItem>
-            
-            <DropdownMenuSeparator className="my-1 lg:my-2 bg-gray-100" />
-            
-            <DropdownMenuItem 
-              onClick={handleLogout}
-              className="
-                flex items-center gap-2 lg:gap-3 px-2 lg:px-3 py-2 lg:py-3 rounded-lg
-                transition-all duration-200 ease-in-out
-                hover:bg-red-50 hover:text-red-700
-                cursor-pointer group
-              "
-            >
-              <LogOut className="h-4 w-4 lg:h-5 lg:w-5 transition-transform duration-200 group-hover:-translate-x-1" />
-              <div>
-                <p className="font-medium text-sm lg:text-base">Sign Out</p>
-                <p className="text-xs text-gray-500 hidden lg:block">See you later!</p>
-              </div>
-            </DropdownMenuItem>
-          </div>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <Sheet open={loginSheet} onOpenChange={() => setLoginSheet(false)} className="bg-none hover:bg-none shadow-none hover:shadow-none">
+        <button  onClick={() => setLoginSheet(true)}  variant="outline"  size="icon"  className="relative group border-none hover:bg-none p-2">
+          <AccountIcon className="w-6 h-6 lg:w-7 lg:h-7 transition-all duration-300 ease-in-out group-hover:shadow-lg group-hover:scale-110" />
+          <span className="sr-only">User cart</span>
+        </button>
+        <LoginWrapper setLoginSheet={setLoginSheet} />
+      </Sheet>
     </div>
   );
 }

@@ -78,7 +78,7 @@ function UserCartItemsContent({ cartItem }) {
           <img
             src={cartItem?.images[0] ?? "/product-placeholder.jpg"}
             alt={cartItem?.title}
-            className="w-12 h-12 md:w-14 md:h-14 lg:w-24 lg:h-20 max-w-full border border-gray-300 object-contain"
+            className="w-24 h-24 max-w-full border border-gray-300 object-cover"
           />
         </div>
         <div className="flex flex-row md:flex-col lg:flex-col gap-1 lg:gap-2">
@@ -86,45 +86,35 @@ function UserCartItemsContent({ cartItem }) {
             {cartItem?.title}
           </h3>
           <div className="flex items-center justify-start ms-2 gap-6">
-            <p
-              className={`text-xl font-semibold text-gray-800 font-mono ${
-                cartItem?.salePrice > 0 ? "line-through" : ""
-              }`}
-            >
+            <p className={`text-lg font-semibold text-gray-800 font-mono ${cartItem?.salePrice > 0 ? "line-through" : ""}`}>
               Rs.{cartItem?.price}
             </p>
             {cartItem?.salePrice > 0 ? (
-              <p className="text-xl font-semibold text-[#2f702e] font-mono">
+              <p className="text-lg font-semibold text-[#2f702e] font-mono">
                 Rs.{cartItem?.salePrice}
               </p>
             ) : null}
           </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              className="h-6 w-6 rounded-full"
-              size="icon"
-              disabled={cartItem?.quantity === 1}
-              onClick={() => handleUpdateQuantity(cartItem, "minus")}
-            >
-              <Minus className="w-4 h-4" />
-              <span className="sr-only">Decrease</span>
-            </Button>
-            <span className="font-semibold text-sm">{cartItem?.quantity}</span>
-            <Button
-              variant="outline"
-              className="h-6 w-6 rounded-full"
-              size="icon"
-              onClick={() => handleUpdateQuantity(cartItem, "plus")}
-            >
-              <Plus className="w-4 h-4" />
-              <span className="sr-only">Increase</span>
-            </Button>
+          <div className="flex items-center justify-between mx-4">
+            <div className="flex items-center border gap-4 p-2">
+              <Button variant="outline" className="h-6 w-6 rounded-none border-none" size="icon" disabled={cartItem?.quantity === 1} onClick={() => handleUpdateQuantity(cartItem, "minus")}>
+                <Minus className="w-5 h-5" />
+                <span className="sr-only">Decrease</span>
+              </Button>
+              <span className="font-semibold text-lg">{cartItem?.quantity}</span>
+              <Button variant="outline" className="h-6 w-6 rounded-none border-none" size="icon" onClick={() => handleUpdateQuantity(cartItem, "plus")}>
+                <Plus className="w-5 h-5" />
+                <span className="sr-only">Increase</span>
+              </Button>
+            </div>
+            <Trash onClick={() => handleCartItemDelete(cartItem)} className="cursor-pointer text-red-600 hover:text-red-800"
+              size={20}
+            />
           </div>
         </div>
       </div>
 
-      <div className="flex sm:flex-col md:flex-row lg:flex-row items-end sm:items-end justify-between sm:justify-center gap-1 sm:gap-2">
+      {/* <div className="flex sm:flex-col md:flex-row lg:flex-row items-end sm:items-end justify-between sm:justify-center gap-1 sm:gap-2">
         <p className="font-semibold text-right text-sm">
           Rs.{" "}
           {(
@@ -137,7 +127,7 @@ function UserCartItemsContent({ cartItem }) {
           className="cursor-pointer text-red-600 hover:text-red-800"
           size={20}
         />
-      </div>
+      </div> */}
     </div>
   );
 }

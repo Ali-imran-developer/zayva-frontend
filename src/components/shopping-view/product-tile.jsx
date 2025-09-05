@@ -16,10 +16,7 @@ function ShoppingProductTile({
   const isToday = newProduct(product);
 
   return (
-    <Card
-      key={item}
-      className="w-full shadow-none max-w-sm mx-auto border-none group"
-    >
+    <Card key={item} className="w-full shadow-none max-w-sm mx-auto border-none group">
       <div className="relative overflow-hidden">
         <img
           src={product?.images?.[0] ?? "/product-placeholder.jpg"}
@@ -35,15 +32,15 @@ function ShoppingProductTile({
         )}
 
         {product?.totalStock === 0 ? (
-          <Badge className="absolute top-8 left-0 rounded-none bg-black px-2 text-gray-200 hover:bg-red-600">
+          <Badge className="absolute top-8 left-0 rounded-none bg-black px-2 text-gray-200">
             Out Of Stock
           </Badge>
         ) : product?.totalStock < 10 ? (
-          <Badge className="absolute top-8 left-0 rounded-none bg-black px-2 text-gray-200 hover:bg-red-600">
+          <Badge className="absolute top-8 left-0 rounded-none bg-black px-2 text-gray-200">
             {`Only ${product?.totalStock} items left`}
           </Badge>
         ) : product?.salePrice > 0 ? (
-          <Badge className="absolute top-8 left-0 rounded-none bg-black px-2 text-gray-200 hover:bg-red-600">
+          <Badge className="absolute top-8 left-0 rounded-none bg-black px-2 text-gray-200">
             Sale
           </Badge>
         ) : null}

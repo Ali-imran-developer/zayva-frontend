@@ -1,14 +1,8 @@
 import { apiClient } from "../config/api-config";
 
-export const apiRequest = async (
-  method: "get" | "post" | "put" | "delete" | "patch",
-  url: string,
-  data?: any,
-  config: any = {}
-) => {
+export const apiRequest = async (method, url, data, config = {}) => {
   try {
     let response;
-
     if (method === "get") {
       response = await apiClient.get(url, config);
     } else if (method === "delete") {
@@ -19,7 +13,7 @@ export const apiRequest = async (
     if ( response?.status === 200 || response?.status === 201 || response?.status === 304) {
       return response?.data;
     }
-  } catch (error: any) {
+  } catch (error) {
     throw error?.response
       ? { status: error.response.status,
           message: error.response.data?.message || error.response.data?.detail || "Request failed",

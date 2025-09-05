@@ -10,6 +10,8 @@ import {
 } from "../ui/select";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
+import Loading from "../ui/loader";
+import { Loader } from "lucide-react";
 
 function CommonForm({
   formControls,
@@ -17,6 +19,7 @@ function CommonForm({
   setFormData,
   onSubmit,
   buttonText,
+  isLoading,
   isBtnDisabled,
 }) {
   function renderInputsByComponentType(getControlItem) {
@@ -120,7 +123,7 @@ function CommonForm({
         ))}
       </div>
       <Button disabled={isBtnDisabled} type="submit" className="mt-4 w-full">
-        {buttonText || "Submit"}
+        {isLoading ? <Loader className="animate-spin" /> : buttonText || "Submit"}
       </Button>
     </form>
   );

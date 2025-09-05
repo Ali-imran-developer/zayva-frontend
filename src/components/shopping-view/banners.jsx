@@ -1,16 +1,32 @@
 import { ensureArray } from "@/helper-functions/use-formater";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import confetti from "canvas-confetti";
 
 const Banners = ({ featureImageList }) => {
-    const [currentSlide, setCurrentSlide] = useState(0);
+  const canvasRef = useRef(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
-    useEffect(() => {
-      const timer = setInterval(() => {
-        setCurrentSlide((prevSlide) => (prevSlide + 1) % featureImageList.length);
-      }, 4000);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prevSlide) => (prevSlide + 1) % featureImageList.length);
+    }, 4000);
   
-      return () => clearInterval(timer);
-    }, [featureImageList]);
+    return () => clearInterval(timer);
+  }, [featureImageList]);
+
+  useEffect(() => {
+    if (canvasRef.current) {
+      const myConfetti = confetti.create(canvasRef.current, {
+        resize: true,
+        useWorker: true,
+      });
+      myConfetti({
+        particleCount: 200,
+        spread: 120,
+        origin: { y: 0.6 },
+      });
+    }
+  }, []);
 
   return (
     <div className="relative w-full h-[400px] overflow-hidden">
@@ -27,6 +43,7 @@ const Banners = ({ featureImageList }) => {
           ))
         : null}
 
+      <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full pointer-events-none" />
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
         {ensureArray(featureImageList)?.map((_, index) => (
           <button
