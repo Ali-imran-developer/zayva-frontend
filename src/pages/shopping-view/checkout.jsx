@@ -12,12 +12,14 @@ import { createNewOrder } from "@/store/shop/order-slice";
 import { useState } from "react";
 import Loading from "@/components/ui/loader";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import { fetchCartItems } from "@/store/shop/cart-slice";
 
 function ShoppingCheckout() {
   const { cartItems } = useSelector((state) => state.shopCart);
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-  const { toast } = useToast();
+  // const { toast } = useToast();
   const navigate = useNavigate();
   const userId = user?.id;
   const guestId = !userId ? getGuestId() : null;
@@ -78,12 +80,19 @@ function ShoppingCheckout() {
       },
     };
     try{
+      const userId = user?.id;
+      const guestId = !userId ? getGuestId() : null;
       console.log("Submitting order data: ", orderData);
       setLoading(true);
       const result = await dispatch(createNewOrder(orderData));
+      console.log("result?.payload?.success", result?.payload?.success);
       if(result?.payload?.success){
         toast.success(result?.payload?.message);
-        resetForm();
+        if (userId) {
+          dispatch(fetchCartItems({ userId }));
+        } else {
+          dispatch(fetchCartItems({ guestId }));
+        }
         navigate("/");
       }
     }catch(error){
