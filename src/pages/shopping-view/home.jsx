@@ -25,20 +25,13 @@ function ShoppingHome() {
   }
 
   const handleAddtoCart = async (getCurrentProductId) => {
-    console.log("getCurrentProductId", getCurrentProductId);
     try {
       setIsLoading(true);
       const userId = user?.id;
       const guestId = !userId ? getGuestId() : null;
-      console.log("guestId inside function: ", guestId);
-      const data = await dispatch(
-        addToCart({
-          userId,
-          guestId,
-          productId: getCurrentProductId,
-          quantity: 1,
-        })
-      );
+      const data = await dispatch(addToCart({
+        userId, guestId, productId: getCurrentProductId, quantity: 1
+      }));
       if (data?.payload?.success) {
         if (userId) {
           await dispatch(fetchCartItems({ userId }));

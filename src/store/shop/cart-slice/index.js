@@ -7,22 +7,10 @@ const initialState = {
   isLoading: false,
 };
 
-export const addToCart = createAsyncThunk(
-  "cart/addToCart",
-  async ({ userId, guestId, productId, quantity }) => {
-    const response = await axios.post(
-      `${PORT}/api/shop/cart/add`,
-      {
-        userId,
-        guestId,
-        productId,
-        quantity,
-      }
-    );
-
-    return response.data;
-  }
-);
+export const addToCart = createAsyncThunk("cart/addToCart", async ({ userId, guestId, productId, quantity }) => {
+  const response = await axios.post(`${PORT}/api/shop/cart/add`, { userId, guestId, productId, quantity });
+  return response.data;
+});
 
 export const fetchCartItems = createAsyncThunk("cart/fetchCartItems", async ({ userId, guestId }) => {
   const response = await axios.get(`${PORT}/api/shop/cart/get`, {
@@ -31,31 +19,17 @@ export const fetchCartItems = createAsyncThunk("cart/fetchCartItems", async ({ u
   return response.data;
 });
 
-export const deleteCartItem = createAsyncThunk(
-  "cart/deleteCartItem",
-  async ({ userId, productId }) => {
-    const response = await axios.delete(
-      `${PORT}/api/shop/cart/${userId}/${productId}`
-    );
-    return response.data;
-  }
-);
+export const deleteCartItem = createAsyncThunk("cart/deleteCartItem", async ({ userId, guestId, productId }) => {
+  const id = userId ? userId : guestId;
+  const response = await axios.delete(`${PORT}/api/shop/cart/${id}/${productId}`);
+  return response.data;
+});
 
-export const updateCartQuantity = createAsyncThunk(
-  "cart/updateCartQuantity",
-  async ({ userId, productId, quantity }) => {
-    const response = await axios.put(
-      `${PORT}/api/shop/cart/update-cart`,
-      {
-        userId,
-        productId,
-        quantity,
-      }
-    );
-
+export const updateCartQuantity = createAsyncThunk("cart/updateCartQuantity", async ({ userId, guestId, productId, quantity }) => {
+  const response = await axios.put(`${PORT}/api/shop/cart/update-cart`,
+    { userId, guestId, productId, quantity });
     return response.data;
-  }
-);
+});
 
 const shoppingCartSlice = createSlice({
   name: "shoppingCart",

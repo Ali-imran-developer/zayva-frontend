@@ -26,12 +26,13 @@ import CartIcon from "../icons/cart";
 import AccountIcon from "../icons/account";
 import SearchInput from "../ui/search-input";
 import LoginWrapper from "./login-wrapper";
+import { getGuestId } from "@/helper-functions/use-auth";
 
 function MenuItems() {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
-  
+
   function handleNavigate(getCurrentMenuItem) {
     sessionStorage.removeItem("filters");
     const currentFilter =
@@ -103,7 +104,13 @@ function HeaderRightContent() {
   }
 
   useEffect(() => {
-    dispatch(fetchCartItems(user?.id));
+    const userId = user?.id;
+    const guestId = !userId ? getGuestId() : null;
+    if (userId) {
+      dispatch(fetchCartItems({ userId }));
+    } else {
+      dispatch(fetchCartItems({ guestId }));
+    }
   }, [dispatch]);
 
   const cartItemCount = cartItems?.items?.length || 0;
@@ -123,16 +130,20 @@ function HeaderRightContent() {
         >
           <CartIcon className="w-6 h-6 lg:w-7 lg:h-7 transition-all duration-300 ease-in-out group-hover:shadow-lg group-hover:scale-110" />
           {cartItemCount > 0 && (
-            <span className="absolute -top-2 -right-2 lg:-top-4 lg:-right-4 bg-black text-white text-xs font-bold rounded-full h-5 w-5 lg:h-6 lg:w-6 flex items-center justify-center animate-pulse shadow-lg">
-              <p className="text-[10px] lg:text-xs">{cartItemCount > 99 ? '99+' : cartItemCount}</p>
+            <span className="absolute -top-2 -right-2 lg:-top-2 lg:-right-2 bg-black text-white text-xs font-bold rounded-full h-5 w-5 lg:h-6 lg:w-6 flex items-center justify-center animate-pulse shadow-lg">
+              <p className="text-[10px] lg:text-xs">
+                {cartItemCount > 99 ? "99+" : cartItemCount}
+              </p>
             </span>
           )}
           <span className="sr-only">User cart</span>
         </button>
-        <UserCartWrapper 
-          setOpenCartSheet={setOpenCartSheet}
-          cartItems={cartItems && cartItems?.items && cartItems?.items?.length > 0 ? cartItems?.items : []}
-        />
+        {openCartSheet && (
+          <UserCartWrapper 
+            setOpenCartSheet={setOpenCartSheet}
+            cartItems={cartItems && cartItems?.items && cartItems?.items?.length > 0 ? cartItems?.items : []}
+          />
+        )}
       </Sheet>
 
       <Sheet open={loginSheet} onOpenChange={() => setLoginSheet(false)} className="bg-none hover:bg-none shadow-none hover:shadow-none">
@@ -150,10 +161,14 @@ function ShoppingHeader() {
   return (
     <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-gray-200 shadow-sm">
       <div className="flex items-center justify-between h-14 sm:h-16 lg:h-20 px-3 sm:px-4 lg:px-12 max-w-7xl mx-auto">
-
-        <Link to="/" className="flex items-center gap-2 group transition-transform duration-300 hover:scale-105 active:scale-95">
+        <Link
+          to="/"
+          className="flex items-center gap-2 group transition-transform duration-300 hover:scale-105 active:scale-95"
+        >
           <div className="relative">
-            <img  src="/logo.svg"  alt="Logo"
+            <img
+              src="/logo.svg"
+              alt="Logo"
               className="h-16 w-16 sm:h-12 sm:w-20 lg:h-24 lg:w-28 transition-all duration-300 group-hover:brightness-110"
             />
           </div>
@@ -165,34 +180,49 @@ function ShoppingHeader() {
           </div>
           <Sheet>
             <SheetTrigger asChild>
-              <Button  variant="outline"  size="icon" className="transition-all duration-300 ease-in-out hover:bg-gray-100 hover:shadow-md active:scale-95 border-2 hover:border-gray-300 h-9 w-9 sm:h-10 sm:w-10">
+              <Button
+                variant="outline"
+                size="icon"
+                className="transition-all duration-300 ease-in-out hover:bg-gray-100 hover:shadow-md active:scale-95 border-2 hover:border-gray-300 h-9 w-9 sm:h-10 sm:w-10"
+              >
                 <Menu className="h-5 w-5 sm:h-6 sm:w-6" />
                 <span className="sr-only">Toggle header menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-full max-w-sm bg-white/95 backdrop-blur-md border-r-0 shadow-2xl">
+            <SheetContent
+              side="left"
+              className="w-full max-w-sm bg-white/95 backdrop-blur-md border-r-0 shadow-2xl"
+            >
               <div className="py-4 lg:py-6 space-y-4 lg:space-y-6">
-
                 <div className="block sm:hidden border-b border-gray-200 pb-4">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-3">Search</h2>
+                  <h2 className="text-lg font-semibold text-gray-900 mb-3">
+                    Search
+                  </h2>
                   <SearchInput />
                 </div>
-                
+
                 <div className="border-b border-gray-200 pb-4 lg:pb-6">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-3 lg:mb-4">Navigation</h2>
+                  <h2 className="text-lg font-semibold text-gray-900 mb-3 lg:mb-4">
+                    Navigation
+                  </h2>
                   <MenuItems />
                 </div>
-                
+
                 <div className="pt-2">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-3 lg:mb-4">Account</h2>
+                  <h2 className="text-lg font-semibold text-gray-900 mb-3 lg:mb-4">
+                    Account
+                  </h2>
                   <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50">
                     <Avatar className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600">
-                      <AvatarFallback className="bg-gradient-to-br from-blue-600 to-purple-600 text-white font-bold">
-                      </AvatarFallback>
+                      <AvatarFallback className="bg-gradient-to-br from-blue-600 to-purple-600 text-white font-bold"></AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="font-semibold text-gray-900 text-sm">Account Options</p>
-                      <p className="text-xs text-gray-500">Manage your account</p>
+                      <p className="font-semibold text-gray-900 text-sm">
+                        Account Options
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        Manage your account
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -207,7 +237,7 @@ function ShoppingHeader() {
         </div>
       </div>
     </header>
-  )
+  );
 }
 
 export default ShoppingHeader;

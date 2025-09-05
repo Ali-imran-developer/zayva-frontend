@@ -17,10 +17,9 @@ function UserCartWrapper({ cartItems, setOpenCartSheet }) {
       </SheetHeader>
 
       <div className="flex-1 mt-8 space-y-4 overflow-y-auto">
-        {ensureArray(cartItems) && ensureArray(cartItems)?.length > 0 ? ensureArray(cartItems)?.map((item, index) => (
+        {ensureArray(cartItems)?.map((item, index) => (
           <UserCartItemsContent cartItem={item} key={index} />
-        ))
-        : null}
+        ))}
       </div>
 
       <div className="border-t pt-4">
