@@ -19,6 +19,7 @@ import {
   resetOrderDetails,
 } from "@/store/admin/order-slice";
 import { Badge } from "../ui/badge";
+import { ensureArray, formatPrice } from "@/helper-functions/use-formater";
 
 function AdminOrdersView() {
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
@@ -36,6 +37,7 @@ function AdminOrdersView() {
   useEffect(() => {
     if (orderDetails !== null) setOpenDetailsDialog(true);
   }, [orderDetails]);
+  console.log("orderList", orderList);
 
   return (
     <Card>
@@ -56,24 +58,18 @@ function AdminOrdersView() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {orderList && orderList?.length > 0 ? orderList?.map((orderItem) => (
+            {ensureArray(orderList) && ensureArray(orderList)?.length > 0 ? ensureArray(orderList)?.map((orderItem) => (
                   <TableRow>
-                    <TableCell>{orderItem?._id}</TableCell>
-                    <TableCell>{orderItem?.orderDate?.split("T")[0]}</TableCell>
+                    <TableCell>{orderItem?.orderId ?? ""}</TableCell>
+                    <TableCell>{orderItem?.createdAt?.split("T")[0]}</TableCell>
                     <TableCell>
-                      <Badge
-                        className={`py-1 px-3 ${
-                          orderItem?.orderStatus === "confirmed"
-                            ? "bg-green-500"
-                            : orderItem?.orderStatus === "rejected"
-                            ? "bg-red-600"
-                            : "bg-black"
-                        }`}
-                      >
-                        {orderItem?.orderStatus}
+                      <Badge className={`py-1 px-3 ${orderItem?.orderStatus === "confirmed"
+                        ? "bg-green-500" : orderItem?.orderStatus === "rejected"
+                        ? "bg-red-600" : "bg-black"}`}>
+                        {orderItem?.orderStatus ?? ""}
                       </Badge>
                     </TableCell>
-                    <TableCell>Rs. {orderItem?.totalAmount}</TableCell>
+                    <TableCell>Rs. {formatPrice(orderItem?.pricing?.totalPrice) ?? 0}</TableCell>
                     <TableCell>
                       <Dialog
                         open={openDetailsDialog}

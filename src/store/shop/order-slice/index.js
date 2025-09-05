@@ -10,17 +10,10 @@ const initialState = {
   orderDetails: null,
 };
 
-export const createNewOrder = createAsyncThunk(
-  "/order/createNewOrder",
-  async (orderData) => {
-    const response = await axios.post(
-      `${PORT}/api/shop/order/create`,
-      orderData
-    );
-
-    return response.data;
-  }
-);
+export const createNewOrder = createAsyncThunk("/order/createNewOrder", async (orderData) => {
+  const response = await axios.post(`${PORT}/api/shop/order/create`, orderData);
+  return response.data;
+});
 
 export const capturePayment = createAsyncThunk(
   "/order/capturePayment",

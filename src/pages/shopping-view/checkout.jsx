@@ -1,127 +1,189 @@
-import Address from "@/components/shopping-view/address";
-import img from "../../assets/account.jpg";
 import { useDispatch, useSelector } from "react-redux";
-import UserCartItemsContent from "@/components/shopping-view/cart-items-content";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import { Input } from "@/components/ui/input";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import { createNewOrder } from "@/store/shop/order-slice";
 import { useToast } from "@/components/ui/use-toast";
+import UserCartItemsContent from "@/components/shopping-view/cart-items-content";
+import { ensureArray, formatPrice } from "@/helper-functions/use-formater";
+import { getGuestId } from "@/helper-functions/use-auth";
+import { createNewOrder } from "@/store/shop/order-slice";
+import { useState } from "react";
+import Loading from "@/components/ui/loader";
 
 function ShoppingCheckout() {
   const { cartItems } = useSelector((state) => state.shopCart);
   const { user } = useSelector((state) => state.auth);
-  const { approvalURL } = useSelector((state) => state.shopOrder);
-  const [currentSelectedAddress, setCurrentSelectedAddress] = useState(null);
-  const [isPaymentStart, setIsPaymemntStart] = useState(false);
   const dispatch = useDispatch();
   const { toast } = useToast();
+  const userId = user?.id;
+  const guestId = !userId ? getGuestId() : null;
+  const [isLoading, setLoading] = useState(false);
 
-  console.log(currentSelectedAddress, "cartItems");
+  const subtotal = ensureArray(cartItems?.items)?.length > 0 ? cartItems.items.reduce((sum, item) =>
+    sum + (item?.salePrice > 0 ? item.salePrice : item.price) * item.quantity, 0) : 0;
+  const shipping = subtotal > 5000 ? 0 : 200;
+  const totalPrice = subtotal + shipping;
 
-  const totalCartAmount =
-    cartItems && cartItems.items && cartItems.items.length > 0
-      ? cartItems.items.reduce(
-          (sum, currentItem) =>
-            sum +
-            (currentItem?.salePrice > 0
-              ? currentItem?.salePrice
-              : currentItem?.price) *
-              currentItem?.quantity,
-          0
-        )
-      : 0;
+  const validationSchema = Yup.object().shape({
+    name: Yup.string().required("Name is required"),
+    phone: Yup.string()
+    .required("Phone is required")
+    .matches(/^[0-9]+$/, "Phone number must contain only digits")
+    .min(11, "Phone number must be at least 10 digits")
+    .max(13, "Phone number must be at most 15 digits"),
+    city: Yup.string().required("City is required"),
+    address: Yup.string().required("Address is required"),
+    paymentMethod: Yup.string().required("Payment method is required"),
+  });
 
-  function handleInitiatePaypalPayment() {
-    if (cartItems.length === 0) {
-      toast({
-        title: "Your cart is empty. Please add items to proceed",
-        variant: "destructive",
-      });
+  const initialValues = {
+    name: "",
+    phone: "",
+    city: "",
+    address: "",
+    email: "",
+    paymentMethod: "cod",
+  };
 
-      return;
-    }
-    if (currentSelectedAddress === null) {
-      toast({
-        title: "Please select one address to proceed.",
-        variant: "destructive",
-      });
-
-      return;
-    }
-
+  const handleSubmit = async (values, { resetForm }) => {
+    const finalOrderStatus = values.paymentMethod === "cod" ? "open" : "pending";
     const orderData = {
-      userId: user?.id,
+      userId: user?.id || null,
+      guestId: guestId || null,
       cartId: cartItems?._id,
-      cartItems: cartItems.items.map((singleCartItem) => ({
-        productId: singleCartItem?.productId,
-        title: singleCartItem?.title,
-        image: singleCartItem?.image,
-        price:
-          singleCartItem?.salePrice > 0
-            ? singleCartItem?.salePrice
-            : singleCartItem?.price,
-        quantity: singleCartItem?.quantity,
+      cartItems: ensureArray(cartItems?.items)?.map((item) => ({
+        productId: item?.productId,
+        title: item?.title,
+        image: item?.images,
+        price: item?.salePrice > 0 ? item.salePrice : item?.price,
+        quantity: item.quantity,
       })),
       addressInfo: {
-        addressId: currentSelectedAddress?._id,
-        address: currentSelectedAddress?.address,
-        city: currentSelectedAddress?.city,
-        pincode: currentSelectedAddress?.pincode,
-        phone: currentSelectedAddress?.phone,
-        notes: currentSelectedAddress?.notes,
+        name: values.name,
+        phone: values.phone,
+        city: values.city,
+        address: values.address,
+        email: values.email || "",
       },
-      orderStatus: "pending",
-      paymentMethod: "paypal",
-      paymentStatus: "pending",
-      totalAmount: totalCartAmount,
-      orderDate: new Date(),
-      orderUpdateDate: new Date(),
-      paymentId: "",
-      payerId: "",
+      paymentMethod: values.paymentMethod,
+      orderStatus: finalOrderStatus,
+      pricing: {
+        subTotal: subtotal,
+        shipping,
+        totalPrice,
+      },
     };
-
-    dispatch(createNewOrder(orderData)).then((data) => {
-      console.log(data, "sangam");
-      if (data?.payload?.success) {
-        setIsPaymemntStart(true);
-      } else {
-        setIsPaymemntStart(false);
+    try{
+      console.log("Submitting order data: ", orderData);
+      setLoading(true);
+      const result = await dispatch(createNewOrder(orderData));
+      if(result?.payload?.success){
+        toast.success(result?.payload?.message);
+        resetForm();
       }
-    });
-  }
-
-  if (approvalURL) {
-    window.location.href = approvalURL;
-  }
+    }catch(error){
+      console.log(error);
+      toast.error(error?.message);
+    }finally{
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="flex flex-col">
-      <div className="relative h-[300px] w-full overflow-hidden">
-        <img src={img} className="h-full w-full object-cover object-center" />
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mt-5 p-5">
-        <Address
-          selectedId={currentSelectedAddress}
-          setCurrentSelectedAddress={setCurrentSelectedAddress}
-        />
-        <div className="flex flex-col gap-4">
-          {cartItems && cartItems.items && cartItems.items.length > 0
-            ? cartItems.items.map((item) => (
-                <UserCartItemsContent cartItem={item} />
-              ))
-            : null}
-          <div className="mt-8 space-y-4">
-            <div className="flex justify-between">
-              <span className="font-bold">Total</span>
-              <span className="font-bold">${totalCartAmount}</span>
+    <div className="flex flex-col p-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
+        >
+          {({ values, setFieldValue, errors, touched }) => (
+            <Form className="flex flex-col gap-4 p-4 rounded-2xl shadow">
+              <h2 className="text-xl font-bold">Shipping Information</h2>
+
+              <div className="flex flex-col gap-1">
+                <Field name="name" as={Input} placeholder="Name" className={`w-full ${errors.name && touched.name ? "border-red-600" : ""}`} />
+                <ErrorMessage name="name" component="div" className="text-red-500 text-sm" />
+              </div>
+
+              <Field name="email" as={Input} placeholder="Email (Optional)" className="w-full" />
+
+              <div className="flex flex-col gap-1">
+                <Field name="phone" as={Input} placeholder="Phone Number" className={`w-full ${errors.phone && touched.phone ? "border-red-600" : ""}`} />
+                <ErrorMessage name="phone" component="div" className="text-red-500 text-sm" />
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <Field name="city" as={Input} placeholder="City" className={`w-full ${errors.city && touched.city ? "border-red-600" : ""}`} />
+                <ErrorMessage name="city" component="div" className="text-red-500 text-sm" />
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <Field name="address" as={Input} placeholder="Address" className={`w-full ${errors.address && touched.address ? "border-red-600" : ""}`} />
+                <ErrorMessage name="address" component="div" className="text-red-500 text-sm" />
+              </div>
+
+              <h2 className="text-xl font-bold mt-4">Payment Method</h2>
+              <RadioGroup value={values.paymentMethod} onValueChange={(val) => setFieldValue("paymentMethod", val)}>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="cod" id="cod" />
+                  <label htmlFor="cod">Cash on Delivery (COD)</label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="jazzcash" id="jazzcash" />
+                  <label htmlFor="jazzcash">JazzCash</label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="easypaisa" id="easypaisa" />
+                  <label htmlFor="easypaisa">EasyPaisa</label>
+                </div>
+              </RadioGroup>
+              <ErrorMessage name="paymentMethod" component="div" className="text-red-500 text-sm" />
+
+              {(values.paymentMethod === "jazzcash" || values.paymentMethod === "easypaisa") && (
+                <div className="flex flex-col gap-1 mt-2">
+                  <span className="text-sm text-gray-800 font-semibold">Send payment to the following number:</span>
+                  <Input
+                    value={values.paymentNumber || (values.paymentMethod === "jazzcash" ? "03211793255" : "03001234567")}
+                    onChange={(e) => setFieldValue("paymentNumber", e.target.value)}
+                    placeholder={values.paymentMethod === "jazzcash" ? "JazzCash Number" : "EasyPaisa Number"}
+                    className="w-full"
+                  />
+                </div>
+              )}
+
+              <Button type="submit" className="w-full mt-4">
+                {isLoading ? <Loading /> : "Place Order"}
+              </Button>
+            </Form>
+          )}
+        </Formik>
+
+        <div className="flex flex-col justify-between gap-4 p-4 rounded-2xl shadow">
+          <div className="flex flex-col gap-4">
+            <h2 className="text-xl font-bold">Order Summary</h2>
+            <div className="min-h-[150px] max-h-[400px] overflow-y-auto space-y-4">
+              {ensureArray(cartItems?.items)?.length > 0 && ensureArray(cartItems?.items)?.map((item) => (
+                <UserCartItemsContent key={item.productId} cartItem={item} />
+              ))}
             </div>
           </div>
-          <div className="mt-4 w-full">
-            <Button onClick={handleInitiatePaypalPayment} className="w-full">
-              {isPaymentStart
-                ? "Processing Paypal Payment..."
-                : "Checkout with Paypal"}
-            </Button>
+
+          <div className="flex flex-col gap-4 pb-2 mx-4">
+            <div className="flex justify-between font-semibold">
+              <span>Subtotal</span>
+              <span>Rs. {formatPrice(subtotal)}</span>
+            </div>
+            <div className="flex justify-between font-semibold">
+              <span>Shipping</span>
+              <span>Rs. {formatPrice(shipping)}</span>
+            </div>
+            <div className="flex justify-between font-semibold">
+              <span>Total</span>
+              <span>Rs. {formatPrice(totalPrice)}</span>
+            </div>
           </div>
         </div>
       </div>
