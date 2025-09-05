@@ -11,12 +11,14 @@ import { getGuestId } from "@/helper-functions/use-auth";
 import { createNewOrder } from "@/store/shop/order-slice";
 import { useState } from "react";
 import Loading from "@/components/ui/loader";
+import { useNavigate } from "react-router-dom";
 
 function ShoppingCheckout() {
   const { cartItems } = useSelector((state) => state.shopCart);
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const userId = user?.id;
   const guestId = !userId ? getGuestId() : null;
   const [isLoading, setLoading] = useState(false);
@@ -82,6 +84,7 @@ function ShoppingCheckout() {
       if(result?.payload?.success){
         toast.success(result?.payload?.message);
         resetForm();
+        navigate("/");
       }
     }catch(error){
       console.log(error);
