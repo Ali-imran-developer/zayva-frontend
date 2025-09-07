@@ -1,28 +1,29 @@
 import { Route, Routes } from "react-router-dom";
-import AuthLayout from "./components/auth/layout";
-import AuthLogin from "./pages/auth/login";
-import AuthRegister from "./pages/auth/register";
-import AdminLayout from "./components/admin-view/layout";
-import AdminDashboard from "./pages/admin-view/dashboard";
-import AdminProducts from "./pages/admin-view/products";
-import AdminOrders from "./pages/admin-view/orders";
-import AdminFeatures from "./pages/admin-view/features";
-import ShoppingLayout from "./components/shopping-view/layout";
-import NotFound from "./pages/not-found";
-import ShoppingHome from "./pages/shopping-view/home";
-import ShoppingListing from "./pages/shopping-view/listing";
-import ShoppingCheckout from "./pages/shopping-view/checkout";
-import ShoppingAccount from "./pages/shopping-view/account";
-// import CheckAuth from "./components/common/check-auth";
-import UnauthPage from "./pages/unauth-page";
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
-import { checkAuth } from "./store/auth-slice";
-import { Skeleton } from "@/components/ui/skeleton";
-import PaypalReturnPage from "./pages/shopping-view/paypal-return";
-import PaymentSuccessPage from "./pages/shopping-view/payment-success";
-import SearchProducts from "./pages/shopping-view/search";
+import { lazy, Suspense } from "react";
 import ProtectedRoute from "./components/common/check-auth";
+import MainLoader from "./components/common/main-loader";
+
+const AuthLayout = lazy(() => import("./components/auth/layout"));
+const AuthLogin = lazy(() => import("./pages/auth/login"));
+const AuthRegister = lazy(() => import("./pages/auth/register"));
+
+const AdminLayout = lazy(() => import("./components/admin-view/layout"));
+const AdminDashboard = lazy(() => import("./pages/admin-view/dashboard"));
+const AdminProducts = lazy(() => import("./pages/admin-view/products"));
+const AdminOrders = lazy(() => import("./pages/admin-view/orders"));
+const AdminFeatures = lazy(() => import("./pages/admin-view/features"));
+
+const ShoppingLayout = lazy(() => import("./components/shopping-view/layout"));
+const ShoppingHome = lazy(() => import("./pages/shopping-view/home"));
+const ShoppingListing = lazy(() => import("./pages/shopping-view/listing"));
+const ShoppingCheckout = lazy(() => import("./pages/shopping-view/checkout"));
+const ShoppingAccount = lazy(() => import("./pages/shopping-view/account"));
+const PaypalReturnPage = lazy(() => import("./pages/shopping-view/paypal-return"));
+const PaymentSuccessPage = lazy(() => import("./pages/shopping-view/payment-success"));
+const SearchProducts = lazy(() => import("./pages/shopping-view/search"));
+
+const UnauthPage = lazy(() => import("./pages/unauth-page"));
+const NotFound = lazy(() => import("./pages/not-found"));
 
 function App() {
   // const { user, isAuthenticated, isLoading } = useSelector((state) => state.auth);
@@ -30,37 +31,39 @@ function App() {
 
   return (
     <div className="flex flex-col overflow-hidden bg-white">
-      <Routes>
+      <Suspense fallback={<MainLoader className="bg-black" />}>
+        <Routes>
 
-        {/* Auth Routes */}
-        <Route path="/auth" element={<AuthLayout />}>
-          <Route path="login" element={<AuthLogin />} />
-          <Route path="register" element={<AuthRegister />} />
-        </Route>
+          {/* Auth Routes */}
+          <Route path="/auth" element={<AuthLayout />}>
+            <Route path="login" element={<AuthLogin />} />
+            <Route path="register" element={<AuthRegister />} />
+          </Route>
 
-        {/* Admin Routes */}
-        <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
-          <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="products" element={<AdminProducts />} />
-          <Route path="orders" element={<AdminOrders />} />
-          <Route path="features" element={<AdminFeatures />} />
-        </Route>
+          {/* Admin Routes */}
+          <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="products" element={<AdminProducts />} />
+            <Route path="orders" element={<AdminOrders />} />
+            <Route path="features" element={<AdminFeatures />} />
+          </Route>
 
-        {/* User Routes */}
-        <Route path="/" element={<ProtectedRoute><ShoppingLayout /></ProtectedRoute>}>
-          <Route index element={<ShoppingHome />} />
-          <Route path="/register" element={<AuthRegister />} />
-          <Route path="shop/listing" element={<ShoppingListing />} />
-          <Route path="shop/checkout" element={<ShoppingCheckout />} />
-          <Route path="shop/account" element={<ShoppingAccount />} />
-          <Route path="shop/paypal-return" element={<PaypalReturnPage />} />
-          <Route path="shop/payment-success" element={<PaymentSuccessPage />} />
-          <Route path="shop/search" element={<SearchProducts />} />
-        </Route>
+          {/* User Routes */}
+          <Route path="/" element={<ProtectedRoute><ShoppingLayout /></ProtectedRoute>}>
+            <Route index element={<ShoppingHome />} />
+            <Route path="/register" element={<AuthRegister />} />
+            <Route path="shop/listing" element={<ShoppingListing />} />
+            <Route path="shop/checkout" element={<ShoppingCheckout />} />
+            <Route path="shop/account" element={<ShoppingAccount />} />
+            <Route path="shop/paypal-return" element={<PaypalReturnPage />} />
+            <Route path="shop/payment-success" element={<PaymentSuccessPage />} />
+            <Route path="shop/search" element={<SearchProducts />} />
+          </Route>
 
-        <Route path="/unauth-page" element={<UnauthPage />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+          <Route path="/unauth-page" element={<UnauthPage />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
     </div>
   );
 }

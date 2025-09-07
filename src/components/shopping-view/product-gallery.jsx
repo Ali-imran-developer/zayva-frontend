@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Badge } from "../ui/badge"
 
-function ProductImageGallery({ productDetails, isToday }) {
+function ProductImageGallery({ productDetails }) {
   const [selectedImage, setSelectedImage] = useState(productDetails?.images[0] ?? "/product-placeholder.jpg")
 
   return (
@@ -20,16 +20,16 @@ function ProductImageGallery({ productDetails, isToday }) {
             {`Only ${productDetails?.totalStock} items left`}
           </Badge>
         ) : productDetails?.salePrice > 0 ? (
-          <Badge className="absolute top-8 left-0 rounded-none bg-black px-2 text-gray-200 hover:bg-red-600">
+          <Badge className="absolute top-0 left-0 rounded-none bg-black px-2 text-gray-200 hover:bg-red-600">
             Sale
           </Badge>
         ) : null}
 
-        {isToday && (
+        {/* {isToday && (
           <span className="absolute top-0 left-0 bg-white text-xs font-medium text-gray-800 px-2 py-1">
             New
           </span>
-        )}
+        )} */}
       </div>
 
       <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-2 mt-4">

@@ -11,8 +11,8 @@ function AdminDashboard() {
   const [uploadedImageUrl, setUploadedImageUrl] = useState("");
   const [imageLoadingState, setImageLoadingState] = useState(false);
   const dispatch = useDispatch();
-  const { featureImageList } = useSelector((state) => state.commonFeature);
-  console.log("featureImageList", featureImageList);
+  // const { featureImageList } = useSelector((state) => state.commonFeature);
+  // console.log("featureImageList", featureImageList);
 
   function handleUploadFeatureImage() {
     dispatch(addFeatureImage(uploadedImageUrl)).then((data) => {
@@ -46,7 +46,7 @@ function AdminDashboard() {
       <Button onClick={handleUploadFeatureImage} className="mt-5 w-full">
         {imageLoadingState ? <Loading /> : "Upload"}
       </Button>
-      {ensureArray(featureImageList) && ensureArray(featureImageList)?.length > 0 && (
+      {/* {ensureArray(featureImageList) && ensureArray(featureImageList)?.length > 0 && (
         <div className="flex flex-col gap-4 mt-5">
           {ensureArray(featureImageList)?.map((featureImgItem, index) =>
             featureImgItem !== "" && featureImgItem !== undefined ? (
@@ -56,7 +56,7 @@ function AdminDashboard() {
             ) : null
           )}
         </div>
-      )}
+      )} */}
     </div>
   );
 }

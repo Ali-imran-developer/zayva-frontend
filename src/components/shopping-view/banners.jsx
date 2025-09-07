@@ -15,7 +15,8 @@ const Banners = ({ featureImageList }) => {
   }, [featureImageList]);
 
   useEffect(() => {
-    if (canvasRef.current) {
+    const hasPartied = localStorage.getItem("partyboom");
+    if (!hasPartied && canvasRef.current) {
       const myConfetti = confetti.create(canvasRef.current, {
         resize: true,
         useWorker: true,
@@ -25,6 +26,7 @@ const Banners = ({ featureImageList }) => {
         spread: 120,
         origin: { y: 0.6 },
       });
+      localStorage.setItem("partyboom", "true");
     }
   }, []);
 

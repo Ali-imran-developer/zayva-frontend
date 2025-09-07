@@ -9,47 +9,31 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Loading from "@/components/ui/loader";
 import { useToast } from "@/components/ui/use-toast";
 import { sortOptions } from "@/config";
-import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
-import {
-  fetchAllFilteredProducts,
-  fetchProductDetails,
-} from "@/store/shop/products-slice";
+import { getGuestId } from "@/helper-functions/use-auth";
+import { ensureArray } from "@/helper-functions/use-formater";
+import createSearchParamsHelper from "@/helper-functions/use-paramHelper";
+import { useCart } from "@/hooks/useCart";
+import { useProducts } from "@/hooks/useProducts";
 import { ArrowUpDownIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 
-function createSearchParamsHelper(filterParams) {
-  const queryParams = [];
-
-  for (const [key, value] of Object.entries(filterParams)) {
-    if (Array.isArray(value) && value.length > 0) {
-      const paramValue = value.join(",");
-
-      queryParams.push(`${key}=${encodeURIComponent(paramValue)}`);
-    }
-  }
-
-  console.log(queryParams, "queryParams");
-
-  return queryParams.join("&");
-}
-
 function ShoppingListing() {
   const dispatch = useDispatch();
-  const { productList, productDetails } = useSelector(
-    (state) => state.shopProducts
-  );
-  const { cartItems } = useSelector((state) => state.shopCart);
-  const { user } = useSelector((state) => state.auth);
+  const { isLoadingProducts, handleGetProducts, handleGetProductsDetail } = useProducts();
+  const { handleAddToCart, handleGetCarts } = useCart();
+  const { productList, productDetails } = useSelector((state) => state.Products);
+  const { user } = useSelector((state) => state.Auth);
   const [filters, setFilters] = useState({});
   const [sort, setSort] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const { toast } = useToast();
-
+  const [isLoading, setIsLoading] = useState(false);
   const categorySearchParam = searchParams.get("category");
 
   function handleSort(value) {
@@ -66,9 +50,7 @@ function ShoppingListing() {
         [getSectionId]: [getCurrentOption],
       };
     } else {
-      const indexOfCurrentOption =
-        cpyFilters[getSectionId].indexOf(getCurrentOption);
-
+      const indexOfCurrentOption = cpyFilters[getSectionId].indexOf(getCurrentOption);
       if (indexOfCurrentOption === -1)
         cpyFilters[getSectionId].push(getCurrentOption);
       else cpyFilters[getSectionId].splice(indexOfCurrentOption, 1);
@@ -79,50 +61,34 @@ function ShoppingListing() {
   }
 
   function handleGetProductDetails(getCurrentProductId) {
-    console.log(getCurrentProductId);
-    dispatch(fetchProductDetails(getCurrentProductId));
+    handleGetProductsDetail(getCurrentProductId);
   }
 
-  function handleAddtoCart(getCurrentProductId, getTotalStock) {
-    console.log(cartItems);
-    let getCartItems = cartItems.items || [];
-
-    if (getCartItems.length) {
-      const indexOfCurrentItem = getCartItems.findIndex(
-        (item) => item.productId === getCurrentProductId
-      );
-      if (indexOfCurrentItem > -1) {
-        const getQuantity = getCartItems[indexOfCurrentItem].quantity;
-        if (getQuantity + 1 > getTotalStock) {
-          toast({
-            title: `Only ${getQuantity} quantity can be added for this item`,
-            variant: "destructive",
-          });
-
-          return;
+  const handleAddtoCartFunc = async (getCurrentProductId, quantity) => {
+    try {
+      setIsLoading(true);
+      const userId = user?.id;
+      const guestId = !userId ? getGuestId() : null;
+      const data = await handleAddToCart({ userId: userId, guestId: guestId, productId: getCurrentProductId, quantity });
+      if (data?.success) {
+        if (userId) {
+          await handleGetCarts({ userId });
+        } else {
+          await handleGetCarts({ guestId });
         }
       }
+    } catch (error) {
+      console.error(error);
+      toast.error(error?.message);
+    } finally {
+      setIsLoading(false);
     }
-
-    dispatch(
-      addToCart({
-        userId: user?.id,
-        productId: getCurrentProductId,
-        quantity: 1,
-      })
-    ).then((data) => {
-      if (data?.payload?.success) {
-        dispatch(fetchCartItems(user?.id));
-        toast({
-          title: "Product is added to cart",
-        });
-      }
-    });
-  }
+  };
 
   useEffect(() => {
     setSort("price-lowtohigh");
     setFilters(JSON.parse(sessionStorage.getItem("filters")) || {});
+
   }, [categorySearchParam]);
 
   useEffect(() => {
@@ -133,17 +99,48 @@ function ShoppingListing() {
   }, [filters]);
 
   useEffect(() => {
-    if (filters !== null && sort !== null)
-      dispatch(
-        fetchAllFilteredProducts({ filterParams: filters, sortParams: sort })
-      );
-  }, [dispatch, sort, filters]);
+    if (filters !== null && sort !== null) {
+      handleGetProducts({ filterParams: filters, sortParams: sort });
+    }
+  }, [sort, filters]);
 
   useEffect(() => {
     if (productDetails !== null) setOpenDetailsDialog(true);
+
   }, [productDetails]);
 
-  console.log(productList, "productListproductListproductList");
+  const renderContent = () => {
+    if (isLoadingProducts) {
+      return (
+        <div className="flex items-center justify-center h-64 w-full">
+          <Loading className="bg-black" />
+        </div>
+      );
+    }
+
+    if (!ensureArray(productList)?.length) {
+      return (
+        <div className="flex items-center justify-center h-64 w-full text-gray-500 font-semibold text-lg">
+          No products exist
+        </div>
+      );
+    }
+
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {ensureArray(productList)?.map((productItem, index) => (
+          <ShoppingProductTile
+            key={productItem?.id || index}
+            item={index}
+            handleGetProductDetails={handleGetProductDetails}
+            product={productItem}
+            handleAddtoCart={handleAddtoCartFunc}
+            isLoading={isLoading}
+          />
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-6 p-4 md:p-6">
@@ -181,23 +178,17 @@ function ShoppingListing() {
             </DropdownMenu>
           </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
-          {productList && productList.length > 0
-            ? productList.map((productItem) => (
-                <ShoppingProductTile
-                  handleGetProductDetails={handleGetProductDetails}
-                  product={productItem}
-                  handleAddtoCart={handleAddtoCart}
-                />
-              ))
-            : null}
+        <div className="container mx-auto px-4">
+          {renderContent()}
         </div>
       </div>
-      <ProductDetailsDialog
-        open={openDetailsDialog}
-        setOpen={setOpenDetailsDialog}
-        productDetails={productDetails}
-      />
+      {openDetailsDialog && (
+        <ProductDetailsDialog
+          open={openDetailsDialog}
+          setOpen={setOpenDetailsDialog}
+          productDetails={productDetails}
+        />
+      )}
     </div>
   );
 }

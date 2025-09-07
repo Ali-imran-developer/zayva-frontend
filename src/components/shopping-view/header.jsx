@@ -1,4 +1,4 @@
-import { HousePlug, LogOut, Menu, ShoppingCart, UserCog } from "lucide-react";
+import { Menu } from "lucide-react";
 import {
   Link,
   useLocation,
@@ -9,14 +9,6 @@ import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { Button } from "../ui/button";
 import { useDispatch, useSelector } from "react-redux";
 import { shoppingViewHeaderMenuItems } from "@/config";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { logoutUser } from "@/store/auth-slice";
 import UserCartWrapper from "./cart-wrapper";
@@ -27,6 +19,7 @@ import AccountIcon from "../icons/account";
 import SearchInput from "../ui/search-input";
 import LoginWrapper from "./login-wrapper";
 import { getGuestId } from "@/helper-functions/use-auth";
+import { useCart } from "@/hooks/useCart";
 
 function MenuItems() {
   const navigate = useNavigate();
@@ -92,26 +85,25 @@ function MenuItems() {
 }
 
 function HeaderRightContent() {
-  const { user } = useSelector((state) => state.auth);
-  const { cartItems } = useSelector((state) => state.shopCart);
+  const { user } = useSelector((state) => state.Auth);
+  const { cartItems } = useSelector((state) => state.Cart);
   const [openCartSheet, setOpenCartSheet] = useState(false);
   const [loginSheet, setLoginSheet] = useState(false);
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const { handleGetCarts } = useCart();
 
-  function handleLogout() {
-    dispatch(logoutUser());
-  }
+  // function handleLogout() {
+  //   dispatch(logoutUser());
+  // }
 
   useEffect(() => {
     const userId = user?.id;
     const guestId = !userId ? getGuestId() : null;
     if (userId) {
-      dispatch(fetchCartItems({ userId }));
+      handleGetCarts({ userId });
     } else {
-      dispatch(fetchCartItems({ guestId }));
+      handleGetCarts({ guestId });
     }
-  }, [dispatch]);
+  }, []);
 
   const cartItemCount = cartItems?.items?.length || 0;
 
@@ -174,7 +166,7 @@ function ShoppingHeader() {
           </div>
         </Link>
 
-        <div className="flex items-center gap-3 lg:hidden ml-2">
+        <div className="flex items-center gap-3 md:flex lg:hidden ml-2">
           <div className="block sm:hidden">
             <HeaderRightContent />
           </div>

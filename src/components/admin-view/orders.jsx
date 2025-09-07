@@ -23,7 +23,7 @@ import { ensureArray, formatPrice } from "@/helper-functions/use-formater";
 
 function AdminOrdersView() {
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
-  const { orderList, orderDetails } = useSelector((state) => state.adminOrder);
+  // const { orderList, orderDetails } = useSelector((state) => state.adminOrder);
   const dispatch = useDispatch();
 
   function handleFetchOrderDetails(getId) {
@@ -34,10 +34,10 @@ function AdminOrdersView() {
     dispatch(getAllOrdersForAdmin());
   }, [dispatch]);
 
-  useEffect(() => {
-    if (orderDetails !== null) setOpenDetailsDialog(true);
-  }, [orderDetails]);
-  console.log("orderList", orderList);
+  // useEffect(() => {
+  //   if (orderDetails !== null) setOpenDetailsDialog(true);
+  // }, [orderDetails]);
+  // console.log("orderList", orderList);
 
   return (
     <Card>
@@ -57,7 +57,7 @@ function AdminOrdersView() {
               </TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
+          {/* <TableBody>
             {ensureArray(orderList) && ensureArray(orderList)?.length > 0 ? ensureArray(orderList)?.map((orderItem) => (
                   <TableRow>
                     <TableCell>{orderItem?.orderId ?? ""}</TableCell>
@@ -87,7 +87,7 @@ function AdminOrdersView() {
                   </TableRow>
                 ))
               : null}
-          </TableBody>
+          </TableBody> */}
         </Table>
       </CardContent>
     </Card>

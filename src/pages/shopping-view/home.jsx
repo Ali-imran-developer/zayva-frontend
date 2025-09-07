@@ -1,44 +1,40 @@
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchAllFilteredProducts, fetchProductDetails } from "@/store/shop/products-slice";
-import ShoppingProductTile from "@/components/shopping-view/product-tile";
-import { useNavigate } from "react-router-dom";
-import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
-import ProductDetailsDialog from "@/components/shopping-view/product-details";
+import { useSelector } from "react-redux";
 import { ensureArray, ensureObject } from "@/helper-functions/use-formater";
 import Banners from "@/components/shopping-view/banners";
 import { featureImageList } from "@/data/banners-data";
 import Loading from "@/components/ui/loader";
 import { getGuestId } from "@/helper-functions/use-auth";
 import toast from "react-hot-toast";
+import { useProducts } from "@/hooks/useProducts";
+import ShoppingProductTile from "@/components/shopping-view/product-tile";
+import ProductDetailsDialog from "@/components/shopping-view/product-details";
+import { useCart } from "@/hooks/useCart";
 
 function ShoppingHome() {
-  const { productList, productDetails } = useSelector((state) => state.shopProducts);
+  const { isLoadingProducts, handleGetProducts, handleGetProductsDetail } = useProducts();
+  const { handleGetCarts, handleAddToCart } = useCart();
+  const { productList, productDetails } = useSelector((state) => state.Products);
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
-  const { user } = useSelector((state) => state.auth);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const { user } = useSelector((state) => state.Auth);
   const [isLoading, setIsLoading] = useState(false);
 
   function handleGetProductDetails(getCurrentProductId) {
-    dispatch(fetchProductDetails(getCurrentProductId));
+    handleGetProductsDetail(getCurrentProductId);
   }
 
-  const handleAddtoCart = async (getCurrentProductId) => {
+  const handleAddtoCartFunc = async (getCurrentProductId, quantity) => {
     try {
       setIsLoading(true);
       const userId = user?.id;
       const guestId = !userId ? getGuestId() : null;
-      const data = await dispatch(addToCart({
-        userId, guestId, productId: getCurrentProductId, quantity: 1
-      }));
-      if (data?.payload?.success) {
+      const data = await handleAddToCart({ userId: userId, guestId: guestId, productId: getCurrentProductId, quantity });
+      if (data?.success) {
         if (userId) {
-          await dispatch(fetchCartItems({ userId }));
+          await handleGetCarts({ userId });
         } else {
-          await dispatch(fetchCartItems({ guestId }));
+          await handleGetCarts({ guestId });
         }
-        toast.success(data.payload.message);
       }
     } catch (error) {
       console.error(error);
@@ -54,13 +50,42 @@ function ShoppingHome() {
   }, [productDetails]);
 
   useEffect(() => {
-    dispatch(
-      fetchAllFilteredProducts({
-        filterParams: {},
-        sortParams: "price-lowtohigh",
-      })
+    handleGetProducts({ filterParams: {}, sortParams: "price-lowtohigh" });
+
+  }, [])
+
+  const renderContent = () => {
+    if (isLoadingProducts) {
+      return (
+        <div className="flex items-center justify-center h-64 w-full">
+          <Loading className="bg-black" />
+        </div>
+      );
+    }
+
+    if (!ensureArray(productList)?.length) {
+      return (
+        <div className="flex items-center justify-center h-64 w-full text-gray-500 text-lg">
+          No products exist
+        </div>
+      );
+    }
+
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {ensureArray(productList)?.map((productItem, index) => (
+          <ShoppingProductTile
+            key={productItem?.id || index}
+            item={index}
+            handleGetProductDetails={handleGetProductDetails}
+            product={productItem}
+            handleAddtoCart={handleAddtoCartFunc}
+            isLoading={isLoading}
+          />
+        ))}
+      </div>
     );
-  }, [dispatch]);
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -71,12 +96,7 @@ function ShoppingHome() {
           <h4 className="text-xl font-bold text-start mb-8 text-[#232323]">
             New Arrivals
           </h4>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {ensureArray(productList) && ensureArray(productList)?.length > 0 ? ensureArray(productList)?.map((productItem, index) => (
-              <ShoppingProductTile item={index} handleGetProductDetails={handleGetProductDetails} product={productItem} handleAddtoCart={handleAddtoCart} isLoading={isLoading} />
-              )) : <div className="max-w-full w-full p-2 flex items-center justify-center bg-black"><Loading /></div>
-            }
-          </div>
+          {renderContent()}
         </div>
       </section>
       <div className="relative w-full h-[400px] overflow-hidden mb-12">

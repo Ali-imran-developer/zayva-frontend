@@ -16,8 +16,8 @@ import toast from "react-hot-toast";
 import { fetchCartItems } from "@/store/shop/cart-slice";
 
 function ShoppingCheckout() {
-  const { cartItems } = useSelector((state) => state.shopCart);
-  const { user } = useSelector((state) => state.auth);
+  const { cartItems } = useSelector((state) => state.Cart);
+  const { user } = useSelector((state) => state.Auth);
   const dispatch = useDispatch();
   // const { toast } = useToast();
   const navigate = useNavigate();
@@ -106,6 +106,33 @@ function ShoppingCheckout() {
   return (
     <div className="flex flex-col p-5">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+
+        <div className="flex flex-col justify-between gap-4 p-4 rounded-2xl shadow">
+          <div className="flex flex-col gap-4">
+            <h2 className="text-xl font-bold">Order Summary</h2>
+            <div className="min-h-[150px] max-h-[400px] overflow-y-auto space-y-4">
+              {ensureArray(cartItems?.items)?.length > 0 && ensureArray(cartItems?.items)?.map((item) => (
+                <UserCartItemsContent key={item.productId} cartItem={item} />
+              ))}
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-4 pb-2 mx-4">
+            <div className="flex justify-between font-semibold">
+              <span>Subtotal</span>
+              <span>Rs. {formatPrice(subtotal)}</span>
+            </div>
+            <div className="flex justify-between font-semibold">
+              <span>Shipping</span>
+              <span>Rs. {formatPrice(shipping)}</span>
+            </div>
+            <div className="flex justify-between font-semibold">
+              <span>Total</span>
+              <span>Rs. {formatPrice(totalPrice)}</span>
+            </div>
+          </div>
+        </div>
+
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
@@ -166,38 +193,12 @@ function ShoppingCheckout() {
                 </div>
               )}
 
-              <Button type="submit" className="w-full mt-4">
+              <Button type="submit" className="w-full mt-4" disabled={ensureArray(cartItems?.items)?.length === 0 || isLoading}>
                 {isLoading ? <Loading /> : "Place Order"}
               </Button>
             </Form>
           )}
         </Formik>
-
-        <div className="flex flex-col justify-between gap-4 p-4 rounded-2xl shadow">
-          <div className="flex flex-col gap-4">
-            <h2 className="text-xl font-bold">Order Summary</h2>
-            <div className="min-h-[150px] max-h-[400px] overflow-y-auto space-y-4">
-              {ensureArray(cartItems?.items)?.length > 0 && ensureArray(cartItems?.items)?.map((item) => (
-                <UserCartItemsContent key={item.productId} cartItem={item} />
-              ))}
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-4 pb-2 mx-4">
-            <div className="flex justify-between font-semibold">
-              <span>Subtotal</span>
-              <span>Rs. {formatPrice(subtotal)}</span>
-            </div>
-            <div className="flex justify-between font-semibold">
-              <span>Shipping</span>
-              <span>Rs. {formatPrice(shipping)}</span>
-            </div>
-            <div className="flex justify-between font-semibold">
-              <span>Total</span>
-              <span>Rs. {formatPrice(totalPrice)}</span>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

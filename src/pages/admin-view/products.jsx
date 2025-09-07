@@ -41,7 +41,7 @@ function AdminProducts() {
   const [imageLoadingState, setImageLoadingState] = useState(false);
   const [currentEditedId, setCurrentEditedId] = useState(null);
 
-  const { productList } = useSelector((state) => state.adminProducts);
+  // const { productList } = useSelector((state) => state.adminProducts);
   const dispatch = useDispatch();
   const { toast } = useToast();
 
@@ -95,11 +95,11 @@ function AdminProducts() {
         </Button>
       </div>
       <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
-        {ensureArray(productList) && ensureArray(productList)?.length > 0 ? ensureArray(productList)?.map((productItem) => (
+        {/* {ensureArray(productList) && ensureArray(productList)?.length > 0 ? ensureArray(productList)?.map((productItem) => (
           <AdminProductTile setFormData={setFormData} setOpenCreateProductsDialog={setOpenCreateProductsDialog} 
             setCurrentEditedId={setCurrentEditedId} product={productItem} handleDelete={handleDelete} />
           ))
-        : null}
+        : null} */}
       </div>
       <Sheet
         open={openCreateProductsDialog}

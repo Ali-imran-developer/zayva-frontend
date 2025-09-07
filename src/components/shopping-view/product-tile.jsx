@@ -13,7 +13,6 @@ function ShoppingProductTile({
   handleAddtoCart,
   isLoading,
 }) {
-  const isToday = newProduct(product);
 
   return (
     <Card key={item} className="w-full shadow-none max-w-sm mx-auto border-none group">
@@ -40,15 +39,10 @@ function ShoppingProductTile({
             {`Only ${product?.totalStock} items left`}
           </Badge>
         ) : product?.salePrice > 0 ? (
-          <Badge className="absolute top-8 left-0 rounded-none bg-black px-2 text-gray-200">
+          <Badge className="absolute top-0 left-0 rounded-none bg-black px-2 text-gray-200">
             Sale
           </Badge>
         ) : null}
-        {isToday && (
-          <span className="absolute top-0 left-0 bg-white text-xs font-medium text-gray-800 px-2 py-1">
-            New
-          </span>
-        )}
 
       <div className="absolute inset-0 flex flex-col justify-between">
         <div className="absolute right-3 top-1/4 -translate-y-1/2 flex flex-col gap-3">
@@ -97,14 +91,13 @@ function ShoppingProductTile({
         </div>
 
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full">
-          <Button onClick={() => handleAddtoCart(product?._id, product?.totalStock)}
+          <Button onClick={() => handleAddtoCart(product._id, 1)}
             className="bg-white text-black border border-black w-full rounded-none shadow-lg hover:bg-black hover:text-white transform translate-y-10 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-700 ease-in-out delay-150">
             {isLoading ? <Loading /> : "ADD TO CART"}
           </Button>
         </div>
       </div>
-
-      </div>
+    </div>
 
       <CardContent className="p-2">
         <h2 className="text-sm text-gray-800 text-center font-[sans-serif] line-clamp-2 font-semibold mb-3">
