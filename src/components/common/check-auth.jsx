@@ -18,6 +18,9 @@ const ProtectedRoute = ({ children }) => {
       return <Navigate to="/" replace />;
     }
   }
+  if (location.pathname.startsWith("/shop/account") && !user) {
+    return <Navigate to="/" replace />;
+  }
 
   return children;
 };

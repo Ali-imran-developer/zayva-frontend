@@ -4,26 +4,25 @@ import * as Yup from "yup";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
 import UserCartItemsContent from "@/components/shopping-view/cart-items-content";
 import { ensureArray, formatPrice } from "@/helper-functions/use-formater";
 import { getGuestId } from "@/helper-functions/use-auth";
-import { createNewOrder } from "@/store/shop/order-slice";
-import { useState } from "react";
 import Loading from "@/components/ui/loader";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { fetchCartItems } from "@/store/shop/cart-slice";
+import { useOrders } from "@/hooks/useOrders";
+import { useCart } from "@/hooks/useCart";
+import AuthController from "@/controllers/authController";
 
 function ShoppingCheckout() {
   const { cartItems } = useSelector((state) => state.Cart);
-  const { user } = useSelector((state) => state.Auth);
-  const dispatch = useDispatch();
-  // const { toast } = useToast();
+  const session = AuthController.getSession();
+  const user = session?.user || null;
+  const { creatingOrders, handleCreateOrders } = useOrders();
+  const { handleGetCarts } = useCart(); 
   const navigate = useNavigate();
   const userId = user?.id;
   const guestId = !userId ? getGuestId() : null;
-  const [isLoading, setLoading] = useState(false);
 
   const subtotal = ensureArray(cartItems?.items)?.length > 0 ? cartItems.items.reduce((sum, item) =>
     sum + (item?.salePrice > 0 ? item.salePrice : item.price) * item.quantity, 0) : 0;
@@ -82,24 +81,18 @@ function ShoppingCheckout() {
     try{
       const userId = user?.id;
       const guestId = !userId ? getGuestId() : null;
-      console.log("Submitting order data: ", orderData);
-      setLoading(true);
-      const result = await dispatch(createNewOrder(orderData));
-      console.log("result?.payload?.success", result?.payload?.success);
-      if(result?.payload?.success){
-        toast.success(result?.payload?.message);
+      const result = await handleCreateOrders(orderData);
+      if(result?.success){
         if (userId) {
-          dispatch(fetchCartItems({ userId }));
+          handleGetCarts({ userId });
         } else {
-          dispatch(fetchCartItems({ guestId }));
+          handleGetCarts({ guestId });
         }
         navigate("/");
       }
     }catch(error){
       console.log(error);
       toast.error(error?.message);
-    }finally{
-      setLoading(false);
     }
   };
 
@@ -193,8 +186,8 @@ function ShoppingCheckout() {
                 </div>
               )}
 
-              <Button type="submit" className="w-full mt-4" disabled={ensureArray(cartItems?.items)?.length === 0 || isLoading}>
-                {isLoading ? <Loading /> : "Place Order"}
+              <Button type="submit" className="w-full mt-4" disabled={ensureArray(cartItems?.items)?.length === 0 || creatingOrders}>
+                {creatingOrders ? <Loading /> : "Place Order"}
               </Button>
             </Form>
           )}

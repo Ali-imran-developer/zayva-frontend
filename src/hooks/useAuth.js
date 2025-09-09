@@ -5,8 +5,6 @@ import toast from "react-hot-toast";
 
 export const useAuth = () => {
   const navigate = useNavigate();
-  const session = AuthController.getSession();
-  console.log(session);
   const [isLoading, setLoading] = useState(false);
 
   const handlePrimaryLogin = async (payload) => {
@@ -19,6 +17,7 @@ export const useAuth = () => {
           user: response.user,
         });
         toast.success(response?.message);
+        navigate("/shop/account");
       }
       if(response?.success && response?.user?.role === "admin"){
         navigate("/admin/dashboard");
@@ -43,7 +42,7 @@ export const useAuth = () => {
           user: response.user,
         });
         toast.success(response?.message);
-        navigate("/");
+        navigate("/shop/account");
       }
     } catch (error) {
       console.log("Error in singup:", error);

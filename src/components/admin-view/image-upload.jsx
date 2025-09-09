@@ -6,6 +6,7 @@ import { Button } from "../ui/button";
 import axios from "axios";
 import { Skeleton } from "../ui/skeleton";
 import { ensureArray } from "@/helper-functions/use-formater";
+import { useLocation } from "react-router-dom";
 const PORT = import.meta.env.VITE_PORT;
 
 function ProductImageUpload({
@@ -19,6 +20,7 @@ function ProductImageUpload({
   isCustomStyling = false,
 }) {
   const inputRef = useRef(null);
+  const location = useLocation();
 
   function handleImageFileChange(event) {
     const selectedFiles = Array.from(event.target.files);
@@ -64,8 +66,10 @@ function ProductImageUpload({
   }, [imageFile]);
 
   return (
-    <div className={`w-full mt-4 ${isCustomStyling ? "" : "max-w-md mx-auto"}`}>
-      <Label className="text-lg font-semibold mb-2 block">Upload Banner Images</Label>
+    <div className={`w-full mt-6 ${isCustomStyling ? "" : "max-w-md mx-auto"}`}>
+      <Label className="text-base font-semibold mb-2 block">
+        {location?.pathname === "/admin/products" ? "Upload Product Images" : "Upload Banner Images"}
+      </Label>
       <div
         onDragOver={handleDragOver}
         onDrop={handleDrop}

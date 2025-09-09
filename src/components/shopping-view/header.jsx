@@ -17,9 +17,10 @@ import { fetchCartItems } from "@/store/shop/cart-slice";
 import CartIcon from "../icons/cart";
 import AccountIcon from "../icons/account";
 import SearchInput from "../ui/search-input";
-import LoginWrapper from "./login-wrapper";
+import LoginWrapper from "./auth-wrapper";
 import { getGuestId } from "@/helper-functions/use-auth";
 import { useCart } from "@/hooks/useCart";
+import AuthController from "@/controllers/authController";
 
 function MenuItems() {
   const navigate = useNavigate();
@@ -85,11 +86,13 @@ function MenuItems() {
 }
 
 function HeaderRightContent() {
-  const { user } = useSelector((state) => state.Auth);
+  const session = AuthController.getSession();
+  const user = session?.user || null;
   const { cartItems } = useSelector((state) => state.Cart);
   const [openCartSheet, setOpenCartSheet] = useState(false);
   const [loginSheet, setLoginSheet] = useState(false);
   const { handleGetCarts } = useCart();
+  const navigate = useNavigate();
 
   // function handleLogout() {
   //   dispatch(logoutUser());
@@ -106,6 +109,13 @@ function HeaderRightContent() {
   }, []);
 
   const cartItemCount = cartItems?.items?.length || 0;
+  const handleAccountClick = () => {
+    if (user && user.role === "user") {
+      navigate("/shop/account");
+    } else {
+      setLoginSheet(true);
+    }
+  };
 
   return (
     <div className="flex items-center gap-3 lg:gap-8">
@@ -139,7 +149,7 @@ function HeaderRightContent() {
       </Sheet>
 
       <Sheet open={loginSheet} onOpenChange={() => setLoginSheet(false)} className="bg-none hover:bg-none shadow-none hover:shadow-none">
-        <button  onClick={() => setLoginSheet(true)}  variant="outline"  size="icon"  className="relative group border-none hover:bg-none p-2">
+        <button  onClick={handleAccountClick} variant="outline"  size="icon"  className="relative group border-none hover:bg-none p-2">
           <AccountIcon className="w-6 h-6 lg:w-7 lg:h-7 transition-all duration-300 ease-in-out group-hover:shadow-lg group-hover:scale-110" />
           <span className="sr-only">User cart</span>
         </button>
@@ -158,10 +168,8 @@ function ShoppingHeader() {
           className="flex items-center gap-2 group transition-transform duration-300 hover:scale-105 active:scale-95"
         >
           <div className="relative">
-            <img
-              src="/logo.svg"
-              alt="Logo"
-              className="h-16 w-16 sm:h-12 sm:w-20 lg:h-24 lg:w-28 transition-all duration-300 group-hover:brightness-110"
+            <img src="/meeras-logo.png" alt="Logo"
+              className="h-12 w-24 lg:h-[64px] lg:w-32 transition-all duration-300 group-hover:brightness-110"
             />
           </div>
         </Link>

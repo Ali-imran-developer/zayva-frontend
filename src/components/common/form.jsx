@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import {
@@ -10,8 +9,8 @@ import {
 } from "../ui/select";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
-import Loading from "../ui/loader";
 import { Loader } from "lucide-react";
+import Loading from "../ui/loader";
 
 function CommonForm({
   formControls,
@@ -123,7 +122,7 @@ function CommonForm({
         ))}
       </div>
       <Button disabled={isBtnDisabled} type="submit" className="mt-4 w-full">
-        {isLoading ? <Loader className="animate-spin" /> : buttonText || "Submit"}
+        {isLoading ? <Loading /> : buttonText || "Submit"}
       </Button>
     </form>
   );

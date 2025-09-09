@@ -165,7 +165,7 @@ function ShoppingListing() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-[200px]">
                 <DropdownMenuRadioGroup value={sort} onValueChange={handleSort}>
-                  {sortOptions.map((sortItem) => (
+                  {ensureArray(sortOptions)?.map((sortItem) => (
                     <DropdownMenuRadioItem
                       value={sortItem.id}
                       key={sortItem.id}

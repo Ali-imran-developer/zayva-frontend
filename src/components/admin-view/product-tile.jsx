@@ -1,15 +1,8 @@
-import { formatPrice, newProduct } from "@/helper-functions/use-formater";
+import { formatPrice } from "@/helper-functions/use-formater";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
-import { Card, CardContent, CardFooter } from "../ui/card";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "../ui/tooltip";
-import { DeleteIcon, EyeIcon, HeartIcon, PencilIcon, X } from "lucide-react";
-import Loading from "../ui/loader";
+import { Card, CardContent } from "../ui/card";
+import { PencilIcon, X } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,6 +14,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
+import { calculateDiscount } from "@/helper-functions/use-discount";
 
 function AdminProductTile({
   product,
@@ -29,6 +23,7 @@ function AdminProductTile({
   setCurrentEditedId,
   handleDelete,
 }) {
+  const discount = calculateDiscount(product?.price, product?.salePrice);
   return (
     <Card className="w-full max-w-sm mx-auto">
       <div>
@@ -46,19 +41,11 @@ function AdminProductTile({
             />
           )}
 
-          {product?.totalStock === 0 ? (
-            <Badge className="absolute top-8 left-0 rounded-none bg-black px-2 text-gray-200">
-              Out Of Stock
-            </Badge>
-          ) : product?.totalStock < 10 ? (
-            <Badge className="absolute top-8 left-0 rounded-none bg-black px-2 text-gray-200">
-              {`Only ${product?.totalStock} items left`}
-            </Badge>
-          ) : product?.salePrice > 0 ? (
-            <Badge className="absolute top-0 left-0 rounded-none bg-black px-2 text-gray-200">
-              Sale
-            </Badge>
-          ) : null}
+          {discount && (
+            <div className="rounded-full absolute top-2 left-2 bg-black p-2 w-11 h-auto text-base text-white font-semibold">
+              {discount}%
+            </div>
+          )}
 
           <Button
             className="absolute top-0 right-0 cursor-pointer rounded-none bg-black px-2 py-1"

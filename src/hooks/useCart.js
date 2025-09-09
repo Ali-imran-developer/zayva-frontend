@@ -40,7 +40,6 @@ export const useCart = () => {
     try {
       setIsFetchingCart(true);
       const response = await CartController.fetchCartItems({ userId, guestId });
-      console.log(response, "response of getCart hook");
       if (response?.success) {
         dispatch(setCart(response?.data));
       }

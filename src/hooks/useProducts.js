@@ -7,6 +7,7 @@ import createSearchParamsHelper from "@/helper-functions/use-paramHelper";
 
 export const useProducts = () => {
   const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
   const [isLoadingProducts, setLoadingProducts] = useState(false);
 
   const handleGetProducts = async ({ filterParams, sortParams }) => {
@@ -36,16 +37,20 @@ export const useProducts = () => {
 
   const handleGetProductsDetail = async (id) => {
     try {
+      setIsLoading(true);
       const response = await ProductsController.getProductsDetail(id);
       dispatch(setProductsDetail(response?.data));
       return response;
     } catch (error) {
       console.log("Error in productsDetail:", error);
       toast.error(error?.message);
+    }finally{
+      setIsLoading(false);
     }
   };
 
   return {
+    isLoading,
     isLoadingProducts,
     handleGetProducts,
     handleGetProductsDetail,

@@ -6,7 +6,6 @@ export const apiClient = axios.create({
   baseURL: APP_BASE_URL,
 });
 
-console.log(APP_BASE_URL);
 apiClient.interceptors.request.use(
   (config) => {
     const persistData = AuthController.getSession();

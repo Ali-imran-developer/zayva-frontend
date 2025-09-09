@@ -6,9 +6,11 @@ import { useEffect } from "react";
 import { useCart } from "@/hooks/useCart";
 import toast from "react-hot-toast";
 import { formatPrice } from "@/helper-functions/use-formater";
+import AuthController from "@/controllers/authController";
 
 function UserCartItemsContent({ cartItem }) {
-  const { user } = useSelector((state) => state.Auth);
+  const session = AuthController.getSession();
+  const user = session?.user;
   const { cartItems } = useSelector((state) => state.Cart);
   const { productList } = useSelector((state) => state.Products);
   const { handleGetCarts, handleUpdateCart, handleDeleteCart } = useCart();
@@ -58,7 +60,7 @@ function UserCartItemsContent({ cartItem }) {
       <div className="flex items-center gap-2">
         <div className="">
           <img
-            src={cartItem?.images[0] ?? "/product-placeholder.jpg"}
+            src={cartItem?.images?.[0] ?? "/product-placeholder.jpg"}
             alt={cartItem?.title}
             className="w-32 h-32 lg:w-24 lg:h-24 max-w-full border border-gray-300 object-cover"
           />
@@ -95,21 +97,6 @@ function UserCartItemsContent({ cartItem }) {
           </div>
         </div>
       </div>
-
-      {/* <div className="flex sm:flex-col md:flex-row lg:flex-row items-end sm:items-end justify-between sm:justify-center gap-1 sm:gap-2">
-        <p className="font-semibold text-right text-sm">
-          Rs.{" "}
-          {(
-            (cartItem?.salePrice > 0 ? cartItem?.salePrice : cartItem?.price) *
-            cartItem?.quantity
-          ).toFixed(2)}
-        </p>
-        <Trash
-          onClick={() => handleCartItemDelete(cartItem)}
-          className="cursor-pointer text-red-600 hover:text-red-800"
-          size={20}
-        />
-      </div> */}
     </div>
   );
 }

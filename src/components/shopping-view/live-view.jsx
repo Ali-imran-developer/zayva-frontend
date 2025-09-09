@@ -14,7 +14,7 @@ const LiveViewers = () => {
   }, [numbers.length]);
 
   return (
-    <div className="text-sm font-medium text-gray-900 mt-2 flex items-center gap-3 py-4">
+    <div className="text-sm font-medium text-gray-900 flex items-center gap-3 py-2">
       <EyeIcon />
       {numbers[index]} customers are viewing this product
     </div>

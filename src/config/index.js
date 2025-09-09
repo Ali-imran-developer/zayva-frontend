@@ -54,6 +54,15 @@ export const addProductFormElements = [
     placeholder: "Enter product description",
   },
   {
+    label: "Product Type",
+    name: "productType",
+    componentType: "select",
+    options: [
+      { id: "newarrival", label: "New Arrival" },
+      { id: "other", label: "Other" },
+    ],
+  },
+  {
     label: "Category",
     name: "category",
     componentType: "select",

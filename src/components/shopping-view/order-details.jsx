@@ -1,13 +1,14 @@
-/* eslint-disable react/jsx-key */
-/* eslint-disable react/prop-types */
-import { useSelector } from "react-redux";
 import { Badge } from "../ui/badge";
 import { DialogContent } from "../ui/dialog";
 import { Label } from "../ui/label";
 import { Separator } from "../ui/separator";
+import AuthController from "@/controllers/authController";
+import { formatPrice } from "@/helper-functions/use-formater";
+import { getOrderStatusClass } from "@/helper-functions/use-orderStatus";
 
 function ShoppingOrderDetailsView({ orderDetails }) {
-  const { user } = useSelector((state) => state.auth);
+  const session = AuthController.getSession();
+  const user = session?.user || null;
 
   return (
     <DialogContent className="w-full h-full max-w-none sm:max-w-[600px] sm:h-auto sm:max-h-[600px] overflow-y-auto sm:rounded-lg p-6">
@@ -15,19 +16,19 @@ function ShoppingOrderDetailsView({ orderDetails }) {
         <div className="grid gap-2">
           <div className="flex mt-6 items-center justify-between">
             <p className="font-medium">Order ID</p>
-            <Label>{orderDetails?._id}</Label>
+            <Label>{orderDetails?.orderId ?? ""}</Label>
           </div>
           <div className="flex mt-2 items-center justify-between">
             <p className="font-medium">Order Date</p>
-            <Label>{orderDetails?.orderDate.split("T")[0]}</Label>
+            <Label>{orderDetails?.createdAt?.split("T")[0]}</Label>
           </div>
           <div className="flex mt-2 items-center justify-between">
             <p className="font-medium">Order Price</p>
-            <Label>${orderDetails?.totalAmount}</Label>
+            <Label>Rs. {formatPrice(orderDetails?.pricing?.totalPrice) ?? 0}</Label>
           </div>
           <div className="flex mt-2 items-center justify-between">
             <p className="font-medium">Payment method</p>
-            <Label>{orderDetails?.paymentMethod}</Label>
+            <Label className="uppercase">{orderDetails?.paymentMethod}</Label>
           </div>
           <div className="flex mt-2 items-center justify-between">
             <p className="font-medium">Payment Status</p>
@@ -36,15 +37,7 @@ function ShoppingOrderDetailsView({ orderDetails }) {
           <div className="flex mt-2 items-center justify-between">
             <p className="font-medium">Order Status</p>
             <Label>
-              <Badge
-                className={`py-1 px-3 ${
-                  orderDetails?.orderStatus === "confirmed"
-                    ? "bg-green-500"
-                    : orderDetails?.orderStatus === "rejected"
-                    ? "bg-red-600"
-                    : "bg-black"
-                }`}
-              >
+              <Badge className={`py-1 px-3 text-white ${getOrderStatusClass(orderDetails?.orderStatus)}`}>
                 {orderDetails?.orderStatus}
               </Badge>
             </Label>
@@ -56,7 +49,7 @@ function ShoppingOrderDetailsView({ orderDetails }) {
             <div className="font-semibold text-xl mb-2">Order Details</div>
             <ul className="grid gap-3">
               {orderDetails?.cartItems && orderDetails?.cartItems.length > 0
-                ? orderDetails?.cartItems.map((item, index) => (
+                ? orderDetails?.cartItems?.map((item, index) => (
                     <li key={index} className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b pb-2">
                       <span className="font-semibold text-sm sm:text-base">{item?.title}</span>
                       <span className="text-sm sm:text-base">{item?.quantity} Item</span>
