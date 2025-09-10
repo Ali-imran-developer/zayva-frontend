@@ -54,11 +54,6 @@ function ShoppingHome() {
     }
   };
 
-  // useEffect(() => {
-  //   if (productDetails !== null) setOpenDetailsDialog(true);
-
-  // }, [productDetails]);
-
   useEffect(() => {
     handleGetProducts({ filterParams: {}, sortParams: "price-lowtohigh" });
 
@@ -107,24 +102,16 @@ function ShoppingHome() {
 
       <section className="py-6">
         <div className="container mx-auto px-4">
-          <h4 className="text-xl font-bold text-start mb-8 text-[#232323]">
+          <h4 className="text-2xl font-bold text-start mb-8 text-[#232323]">
             New Arrivals
           </h4>
           {renderProducts(newArrivalProducts)}
         </div>
       </section>
 
-      <div className="relative w-full h-[400px] overflow-hidden mb-12">
-        <img
-          src={featureImageList[2]}
-          alt="Banner"
-          className="absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000"
-        />
-      </div>
-
       <section className="py-2">
         <div className="container mx-auto px-4">
-          <h4 className="text-xl font-bold text-start mb-4 text-[#232323]">
+          <h4 className="text-2xl font-bold text-start mb-4 text-[#232323]">
             Printed Brands Suits
           </h4>
           {renderProducts(otherProducts)}

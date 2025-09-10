@@ -1,6 +1,8 @@
 export const featureImageList = [
-  "/banners/newbanner1.png",
-  "/banners/newbanner2.png",
-  "/banners/banner3.webp",
-  "/banners/banner4.webp",
+  "/new-banners/banner1.jpg",
+  "/new-banners/banner2.jpg",
+  "/new-banners/banner3.jpg",
+  "/new-banners/banner4.jpg",
+  "/new-banners/banner5.jpg",
+  "/new-banners/banner6.jpg",
 ];

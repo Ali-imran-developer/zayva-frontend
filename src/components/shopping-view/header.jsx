@@ -136,7 +136,7 @@ function ShoppingHeader() {
         >
           <div className="relative">
             <img src="/meeras-logo.png" alt="Logo"
-              className="h-12 w-24 lg:h-[64px] lg:w-32 transition-all duration-300 group-hover:brightness-110"
+              className="h-12 w-24 lg:h-[60px] lg:w-32 transition-all duration-300 group-hover:brightness-110"
             />
           </div>
         </Link>

@@ -14,7 +14,7 @@ export const WhatsAppButton = ({
 
   return (
     <Link to={baseUrl} target="_blank">
-      <img src={whatsappImage} alt="Whatsapp Image" className={`w-20 h-20 animate-bounce cursor-pointer ${className}`} />
+      <img src={whatsappImage} alt="Whatsapp Image" className={`w-16 h-16 animate-bounce cursor-pointer ${className}`} />
     </Link>
   );
 };
