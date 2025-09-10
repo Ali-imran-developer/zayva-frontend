@@ -2,10 +2,11 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import ReviewsController from "@/controllers/reviewController";
-import { setReview } from "@/stores/slices/review-slice";
+import { setAllReviews, setReview } from "@/stores/slices/review-slice";
 
 export const useReviews = () => {
   const dispatch = useDispatch();
+  const [isLoading, setLoading] = useState(false);
   const [isAddingReview, setAddingReview] = useState(false);
 
   const handleAddReview = async (formdata) => {
@@ -33,9 +34,27 @@ export const useReviews = () => {
     }
   };
 
+  const handleGetAllReviews = async () => {
+    try {
+      setLoading(true);
+      const response = await ReviewsController.getAllReviews();
+      if(response?.success){
+        dispatch(setAllReviews(response?.data));
+      }
+      return response;
+    } catch (error) {
+      console.log("Error in productsDetail:", error);
+      toast.error(error?.message);
+    }finally{
+      setLoading(false);
+    }
+  };
+
   return {
+    isLoading,
     isAddingReview,
     handleAddReview,
     handleGetReviews,
+    handleGetAllReviews,
   }
 };

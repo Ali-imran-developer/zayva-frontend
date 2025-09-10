@@ -25,48 +25,15 @@ import AuthController from "@/controllers/authController";
 function MenuItems() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  function handleNavigate(getCurrentMenuItem) {
-    sessionStorage.removeItem("filters");
-    const currentFilter =
-      getCurrentMenuItem.id !== "home" &&
-      getCurrentMenuItem.id !== "products" &&
-      getCurrentMenuItem.id !== "search"
-        ? {
-            category: [getCurrentMenuItem.id],
-          }
-        : null;
-    sessionStorage.setItem("filters", JSON.stringify(currentFilter));
-    location.pathname.includes("listing") && currentFilter !== null
-      ? setSearchParams(
-          new URLSearchParams(`?category=${getCurrentMenuItem.id}`)
-        )
-      : navigate(getCurrentMenuItem.path);
-  }
 
   const isActiveRoute = (menuItem) => {
-    if (menuItem.id === "home") {
-      return location.pathname === "/";
-    }
-    if (menuItem.id === "search") {
-      return location.pathname === "/shop/search";
-    }
-    if (menuItem.id === "products") {
-      return location.pathname === "/shop/listing" && !searchParams.get("category");
-    }
-    return searchParams.get("category") === menuItem.id;
+    return location.pathname === menuItem.path;
   };
 
   return (
     <nav className="flex flex-col mb-4 lg:mb-0 lg:items-center gap-1 lg:gap-8 lg:flex-row">
       {shoppingViewHeaderMenuItems?.map((menuItem) => (
-        <div 
-          key={menuItem?.id} 
-          onClick={() => handleNavigate(menuItem)}
-          className={`group relative cursor-pointer px-3 py-2 lg:py-2 rounded-lg transition-all duration-300 ease-in-out active:scale-95
-          ${isActiveRoute(menuItem) ? 'shadow-sm' : 'text-gray-700 hover:text-gray-900'}`}
-        >
+        <div key={menuItem?.id}  onClick={() => navigate(menuItem.path)} className={`group relative cursor-pointer px-3 py-2 lg:py-2 rounded-lg transition-all duration-300 ease-in-out active:scale-95 ${isActiveRoute(menuItem) ? 'shadow-sm' : 'text-gray-700 hover:text-gray-900'}`}>
           <div className="flex items-center gap-3 lg:flex-col lg:gap-1">
             <span className="text-lg lg:text-base transition-transform duration-200 lg:group-hover:scale-110">
               {menuItem.icon}

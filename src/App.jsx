@@ -11,6 +11,8 @@ const AdminLayout = lazy(() => import("./components/admin-view/layout"));
 const AdminDashboard = lazy(() => import("./pages/admin-view/dashboard"));
 const AdminProducts = lazy(() => import("./pages/admin-view/products"));
 const AdminOrders = lazy(() => import("./pages/admin-view/orders"));
+const AdminCustomers = lazy(() => import("./pages/admin-view/customers"));
+const AdminReviews = lazy(() => import("./pages/admin-view/reviews"));
 const AdminOrderDetails = lazy(() => import("./components/admin-view/order-details"));
 const AdminFeatures = lazy(() => import("./pages/admin-view/features"));
 
@@ -20,6 +22,7 @@ const ShoppingListing = lazy(() => import("./pages/shopping-view/listing"));
 const ShoppingListingDetail = lazy(() => import("./pages/shopping-view/listing-detail"));
 const ShoppingCheckout = lazy(() => import("./pages/shopping-view/checkout"));
 const ShoppingAccount = lazy(() => import("./pages/shopping-view/account"));
+const ShoppingBlogs = lazy(() => import("./pages/shopping-view/blogs"));
 const PaypalReturnPage = lazy(() => import("./pages/shopping-view/paypal-return"));
 const PaymentSuccessPage = lazy(() => import("./pages/shopping-view/payment-success"));
 const SearchProducts = lazy(() => import("./pages/shopping-view/search"));
@@ -39,6 +42,8 @@ function App() {
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="products" element={<AdminProducts />} />
             <Route path="orders" element={<AdminOrders />} />
+            <Route path="customers" element={<AdminCustomers />} />
+            <Route path="reviews" element={<AdminReviews />} />
             <Route path="orders/:id" element={<AdminOrderDetails />} />
             <Route path="features" element={<AdminFeatures />} />
           </Route>
@@ -50,8 +55,9 @@ function App() {
             <Route path="shop/listing/:id" element={<ShoppingListingDetail />} />
             <Route path="shop/checkout" element={<ShoppingCheckout />} />
             <Route path="shop/account" element={<ShoppingAccount />} />
-            <Route path="shop/paypal-return" element={<PaypalReturnPage />} />
-            <Route path="shop/payment-success" element={<PaymentSuccessPage />} />
+            <Route path="shop/blogs" element={<ShoppingBlogs />} />
+            {/* <Route path="shop/paypal-return" element={<PaypalReturnPage />} />
+            <Route path="shop/payment-success" element={<PaymentSuccessPage />} /> */}
             <Route path="shop/search" element={<SearchProducts />} />
           </Route>
 

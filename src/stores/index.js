@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./slices/auth-slice";
 import ordersReducer from "./slices/orders-slice";
+import customerReducer from "./slices/customer-slice";
 import reviewReducer from "./slices/review-slice";
 import productsReducer from "./slices/products-slice";
 import cartReducer from "./slices/cart-slice";
@@ -13,6 +14,7 @@ const store = configureStore({
     Auth: authReducer,
     Products: productsReducer,
     Orders: ordersReducer,
+    Customer: customerReducer,
     Review: reviewReducer,
     Cart: cartReducer,
     Features: featureReducer,

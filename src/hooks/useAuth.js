@@ -42,8 +42,11 @@ export const useAuth = () => {
           user: response.user,
         });
         toast.success(response?.message);
-        navigate("/shop/account");
+        if (!location.pathname.startsWith("/shop/listing/")) {
+          navigate("/shop/account");
+        }
       }
+      return response;
     } catch (error) {
       console.log("Error in singup:", error);
       toast.error(error?.message);

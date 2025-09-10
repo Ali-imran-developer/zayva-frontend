@@ -27,6 +27,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import ReviewForm from "@/components/shopping-view/review-form";
+import SignInDialog from "@/components/shopping-view/signin-dialog";
 
 const ListingDetail = () => {
   const { id } = useParams();
@@ -34,15 +35,13 @@ const ListingDetail = () => {
   const [reviewMsg, setReviewMsg] = useState("");
   const [rating, setRating] = useState(0);
   const [showReviewForm, setShowReviewForm] = useState(false);
-
-  // all hooks first!
   const { isLoading, handleGetProductsDetail } = useProducts();
   const { productDetails } = useSelector((state) => state.Products);
   const reviews = useSelector((state) => state.Review?.reviews || []);
   const { isAddingReview, handleAddReview, handleGetReviews } = useReviews();
   const [selectedImage, setSelectedImage] = useState("");
   const { handleAddToCart, isAddingCart } = useCart();
-
+  const [openSignIn, setOpenSignIn] = useState(false);
   const session = AuthController.getSession();
   const user = session?.user;
   const userId = user?.id;
@@ -60,14 +59,6 @@ const ListingDetail = () => {
       setSelectedImage(productDetails.images[0]);
     }
   }, [productDetails]);
-
-  // if (isLoading) {
-  //   return (
-  //     <div className="p-10 text-center">
-  //       <Loading className="bg-black" />
-  //     </div>
-  //   );
-  // }
 
   const handleAddToCartClick = async (productId) => {
     await handleAddToCart({ userId, guestId, productId, quantity });
@@ -154,6 +145,10 @@ const ListingDetail = () => {
       {isLoading ? (
         <div className="pt-[200px] text-center">
           <Loading className="bg-black" />
+        </div>
+      ) : !productDetails || Object.keys(productDetails).length === 0 ? (
+        <div className="pt-[200px] text-center">
+          <h2 className="text-2xl font-bold text-gray-700">No product detail found</h2>
         </div>
       ) : (
         <>
@@ -356,11 +351,12 @@ const ListingDetail = () => {
                       You need to be logged in to share your experience with this
                       product.
                     </p>
-                    <Button>Sign In</Button>
+                    <Button onClick={() => setOpenSignIn(true)}>Sign In</Button>
                   </CardContent>
                 </Card>
               )}
             </TabsContent>
+            <SignInDialog open={openSignIn} onOpenChange={setOpenSignIn} />
           </Tabs>
         </div>
         </>

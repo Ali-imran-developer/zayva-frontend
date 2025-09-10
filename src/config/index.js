@@ -122,35 +122,15 @@ export const shoppingViewHeaderMenuItems = [
     path: "/shop/listing",
   },
   {
-    id: "men",
-    label: "Men",
-    path: "/shop/listing",
+    id: "blogs",
+    label: "Blogs",
+    path: "/shop/blogs",
   },
   {
-    id: "women",
-    label: "Women",
-    path: "/shop/listing",
+    id: "contact",
+    label: "Contact",
+    path: "/shop/contact",
   },
-  // {
-  //   id: "kids",
-  //   label: "Kids",
-  //   path: "/shop/listing",
-  // },
-  // {
-  //   id: "footwear",
-  //   label: "Footwear",
-  //   path: "/shop/listing",
-  // },
-  // {
-  //   id: "accessories",
-  //   label: "Accessories",
-  //   path: "/shop/listing",
-  // },
-  // {
-  //   id: "search",
-  //   label: "Search",
-  //   path: "/shop/search",
-  // },
 ];
 
 export const categoryOptionsMap = {

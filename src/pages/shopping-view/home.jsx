@@ -22,8 +22,15 @@ function ShoppingHome() {
   const user = session?.user;
   const [isLoading, setIsLoading] = useState(false);
 
-  function handleGetProductDetails(getCurrentProductId) {
-    handleGetProductsDetail(getCurrentProductId);
+  const handleGetProductDetails = async (getCurrentProductId) => {
+    try{
+      const response = await handleGetProductsDetail(getCurrentProductId);
+      if(response?.success && productDetails !== null){
+        setOpenDetailsDialog(true);
+      }
+    }catch(error){
+      console.log(error);
+    }
   }
 
   const handleAddtoCartFunc = async (getCurrentProductId, quantity) => {
@@ -47,10 +54,10 @@ function ShoppingHome() {
     }
   };
 
-  useEffect(() => {
-    if (productDetails !== null) setOpenDetailsDialog(true);
+  // useEffect(() => {
+  //   if (productDetails !== null) setOpenDetailsDialog(true);
 
-  }, [productDetails]);
+  // }, [productDetails]);
 
   useEffect(() => {
     handleGetProducts({ filterParams: {}, sortParams: "price-lowtohigh" });

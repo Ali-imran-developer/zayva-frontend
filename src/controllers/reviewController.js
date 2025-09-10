@@ -7,6 +7,9 @@ class ReviewsController {
   static getReviews(id) {
     return apiRequest("get", `/api/shop/review/${id}`);
   }
+  static getAllReviews() {
+    return apiRequest("get", `/api/shop/review/get`);
+  }
 }
 
 export default ReviewsController;
