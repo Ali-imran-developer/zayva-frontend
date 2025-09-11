@@ -1,6 +1,7 @@
 import ProductFilter from "@/components/shopping-view/filter";
 import ProductDetailsDialog from "@/components/shopping-view/product-details";
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
+import ShoppingProductSkeleton from "@/components/shopping-view/products-skeleton";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -119,8 +120,10 @@ function ShoppingListing() {
   const renderContent = () => {
     if (isLoadingProducts) {
       return (
-        <div className="flex items-center justify-center h-64 w-full">
-          <Loading className="bg-black" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {Array.from({ length: 8 }).map((_, index) => (
+            <ShoppingProductSkeleton key={index} />
+          ))}
         </div>
       );
     }

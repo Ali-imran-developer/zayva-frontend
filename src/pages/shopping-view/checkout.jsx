@@ -178,7 +178,7 @@ function ShoppingCheckout() {
                 <div className="flex flex-col gap-1 mt-2">
                   <span className="text-sm text-gray-800 font-semibold">Send payment to the following number:</span>
                   <Input
-                    value={values.paymentNumber || (values.paymentMethod === "jazzcash" ? "03211793255" : "03001234567")}
+                    value={values.paymentNumber || (values.paymentMethod === "jazzcash" ? "03271726674" : "03271726674")}
                     onChange={(e) => setFieldValue("paymentNumber", e.target.value)}
                     placeholder={values.paymentMethod === "jazzcash" ? "JazzCash Number" : "EasyPaisa Number"}
                     className="w-full"

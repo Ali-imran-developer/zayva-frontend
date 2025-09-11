@@ -1,7 +1,9 @@
 import {
   BadgeCheck,
+  BookAIcon,
   ChartNoAxesCombined,
   LayoutDashboard,
+  Phone,
   ShoppingBasket,
   Star,
   User2,
@@ -41,6 +43,18 @@ const adminSidebarMenuItems = [
     label: "Reviews",
     path: "/admin/reviews",
     icon: <Star />,
+  },
+  {
+    id: "blogs",
+    label: "Blogs",
+    path: "/admin/blogs",
+    icon: <BookAIcon />,
+  },
+  {
+    id: "contacts",
+    label: "Contacts",
+    path: "/admin/contact",
+    icon: <Phone />,
   },
 ];
 

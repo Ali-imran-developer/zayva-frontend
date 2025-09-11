@@ -12,6 +12,7 @@ import ProductDetailsDialog from "@/components/shopping-view/product-details";
 import { useCart } from "@/hooks/useCart";
 import { WhatsAppButton } from "@/components/common/whatsapp";
 import AuthController from "@/controllers/authController";
+import ShoppingProductSkeleton from "@/components/shopping-view/products-skeleton";
 
 function ShoppingHome() {
   const { isLoadingProducts, handleGetProducts, handleGetProductsDetail } = useProducts();
@@ -65,8 +66,10 @@ function ShoppingHome() {
   const renderProducts = (products) => {
     if (isLoadingProducts) {
       return (
-        <div className="flex items-center justify-center h-64 w-full">
-          <Loading className="bg-black" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {Array.from({ length: 8 }).map((_, index) => (
+            <ShoppingProductSkeleton key={index} />
+          ))}
         </div>
       );
     }
@@ -102,18 +105,22 @@ function ShoppingHome() {
 
       <section className="py-6">
         <div className="container mx-auto px-4">
-          <h4 className="text-2xl font-bold text-start mb-8 text-[#232323]">
-            New Arrivals
-          </h4>
+          {!isLoadingProducts && (
+            <h4 className="text-2xl font-bold text-start mb-8 text-[#232323]">
+              New Arrivals
+            </h4>
+          )}
           {renderProducts(newArrivalProducts)}
         </div>
       </section>
 
       <section className="py-2">
         <div className="container mx-auto px-4">
-          <h4 className="text-2xl font-bold text-start mb-4 text-[#232323]">
-            Printed Brands Suits
-          </h4>
+          {!isLoadingProducts && (
+            <h4 className="text-2xl font-bold text-start mb-4 text-[#232323]">
+              Printed Brands Suits
+            </h4>
+          )}
           {renderProducts(otherProducts)}
         </div>
       </section>

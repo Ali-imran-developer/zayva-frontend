@@ -47,14 +47,11 @@ function AdminProductTile({
             </div>
           )}
 
-          <Button
-            className="absolute top-0 right-0 cursor-pointer rounded-none bg-black px-2 py-1"
-            onClick={() => {
-              setOpenCreateProductsDialog(true);
-              setCurrentEditedId(product?._id);
-              setFormData(product);
-            }}
-          >
+          <Button className="absolute top-0 right-0 cursor-pointer rounded-none bg-black px-2 py-1" onClick={() => {
+            setOpenCreateProductsDialog(true);
+            setCurrentEditedId(product?._id);
+            setFormData(product);
+          }}>
             <PencilIcon className="w-4 h-4 cursor-pointer hover:cursor-pointer" />
           </Button>
 
