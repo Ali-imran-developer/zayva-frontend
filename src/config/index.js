@@ -83,6 +83,7 @@ export const addProductFormElements = [
     name: "brand",
     componentType: "select",
     options: [
+      { id: "dior", label: "Dior" },
       { id: "saya", label: "SAYA" },
       { id: "khaadi", label: "Khaadi" },
       { id: "lv", label: "Lv" },
@@ -93,6 +94,9 @@ export const addProductFormElements = [
       { id: "ittehad", label: "Ittehad" },
       { id: "ramsha", label: "Ramsha" },
       { id: "mariab", label: "Maria.B" },
+      { id: "binsaeed", label: "Bin Saeed" },
+      { id: "ramsha", label: "Ramsha" },
+      { id: "gulahmed", label: "Gul Ahmed" },
     ],
   },
   {
