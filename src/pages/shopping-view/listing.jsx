@@ -13,6 +13,7 @@ import {
 import Loading from "@/components/ui/loader";
 import { useToast } from "@/components/ui/use-toast";
 import { sortOptions } from "@/config";
+import AuthController from "@/controllers/authController";
 import { getGuestId } from "@/helper-functions/use-auth";
 import { ensureArray } from "@/helper-functions/use-formater";
 import createSearchParamsHelper from "@/helper-functions/use-paramHelper";
@@ -28,7 +29,8 @@ function ShoppingListing() {
   const { isLoadingProducts, handleGetProducts, handleGetProductsDetail } = useProducts();
   const { handleAddToCart, handleGetCarts } = useCart();
   const { productList, productDetails } = useSelector((state) => state.Products);
-  const { user } = useSelector((state) => state.Auth);
+  const session = AuthController.getSession();
+  const user = session?.user;
   const [filters, setFilters] = useState({});
   const [sort, setSort] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();

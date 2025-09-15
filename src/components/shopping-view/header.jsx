@@ -8,7 +8,7 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { Button } from "../ui/button";
 import { useDispatch, useSelector } from "react-redux";
-import { shoppingViewHeaderMenuItems } from "@/config";
+import { menuItems } from "@/config";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { logoutUser } from "@/store/auth-slice";
 import UserCartWrapper from "./cart-wrapper";
@@ -16,7 +16,6 @@ import { useEffect, useState } from "react";
 import { fetchCartItems } from "@/store/shop/cart-slice";
 import CartIcon from "../icons/cart";
 import AccountIcon from "../icons/account";
-import SearchInput from "../ui/search-input";
 import LoginWrapper from "./auth-wrapper";
 import { getGuestId } from "@/helper-functions/use-auth";
 import { useCart } from "@/hooks/useCart";
@@ -31,21 +30,21 @@ function MenuItems() {
   };
 
   return (
-    <nav className="flex flex-col mb-4 lg:mb-0 lg:items-center gap-1 lg:gap-8 lg:flex-row">
-      {shoppingViewHeaderMenuItems?.map((menuItem) => (
-        <div key={menuItem?.id}  onClick={() => navigate(menuItem.path)} className={`group relative cursor-pointer px-3 py-2 lg:py-2 rounded-lg transition-all duration-300 ease-in-out active:scale-95 ${isActiveRoute(menuItem) ? 'shadow-sm' : 'text-gray-700 hover:text-gray-900'}`}>
-          <div className="flex items-center gap-3 lg:flex-col lg:gap-1">
-            <span className="text-lg lg:text-base transition-transform duration-200 lg:group-hover:scale-110">
+    // <nav className="flex flex-wrap justify-center items-center gap-2 sm:gap-4 md:gap-6 lg:gap-4 px-2 py-3">
+    <nav className="flex flex-col sm:flex-col md:flex-col lg:flex-row lg:flex-wrap items-start lg:items-center justify-start lg:justify-center gap-2 sm:gap-4 md:gap-6 lg:gap-4 px-2 py-3">
+      {menuItems?.map((menuItem) => (
+        <div key={menuItem?.id} onClick={() => navigate(menuItem.path)}
+          className={`group relative cursor-pointer px-3 py-2 rounded-lg  transition-all duration-300 ease-in-out active:scale-95 
+          ${isActiveRoute(menuItem)  ? 'shadow-sm text-black'  : 'text-gray-700 hover:text-gray-900'}`}>
+          <div className="flex flex-col items-center gap-1">
+            <span className="text-base md:text-lg transition-transform duration-200 group-hover:scale-110">
               {menuItem.icon}
             </span>
-            <span className="text-sm font-medium tracking-wide lg:text-xs lg:font-semibold lg:uppercase lg:tracking-wider">
+            <span className="text-xs md:text-sm font-medium uppercase tracking-wide">
               {menuItem.label}
             </span>
           </div>
-          
-          <div className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 h-0.5 bg-black transition-all duration-300 hidden lg:block ${isActiveRoute(menuItem) ? 'w-full' : 'w-0 group-hover:w-full'}`} />
-          <div className={`absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-black transition-all duration-300 lg:hidden ${isActiveRoute(menuItem) ? 'opacity-100' : 'opacity-0'}`} />
-          <div className="absolute inset-0 rounded-lg opacity-0 transition-opacity duration-300 -z-10" />
+          <div className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 h-0.5 bg-black transition-all duration-300 hidden lg:block ${ isActiveRoute(menuItem) ? 'w-full' : 'w-0 group-hover:w-full'}`} />
         </div>
       ))}
     </nav>
@@ -86,9 +85,9 @@ function HeaderRightContent() {
 
   return (
     <div className="flex items-center gap-3 lg:gap-8">
-      <div className="hidden md:block">
+      {/* <div className="hidden md:block">
         <SearchInput />
-      </div>
+      </div> */}
 
       <Sheet open={openCartSheet} onOpenChange={() => setOpenCartSheet(false)} className="bg-none hover:bg-none shadow-none hover:shadow-none">
         <button 
@@ -129,14 +128,11 @@ function HeaderRightContent() {
 function ShoppingHeader() {
   return (
     <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-gray-200 shadow-sm">
-      <div className="flex items-center justify-between h-14 sm:h-16 lg:h-20 px-3 sm:px-4 lg:px-12 max-w-7xl mx-auto">
-        <Link
-          to="/"
-          className="flex items-center gap-2 group transition-transform duration-300 hover:scale-105 active:scale-95"
-        >
+      <div className="flex items-center justify-between h-14 sm:h-16 lg:h-32 px-3 sm:px-4 lg:px-12 max-w-7xl mx-auto">
+        <Link to="/" className="flex items-center gap-2 group transition-transform duration-300 hover:scale-105 active:scale-95">
           <div className="relative">
             <img src="/meeras-logo.png" alt="Logo"
-              className="h-12 w-24 lg:h-[60px] lg:w-32 transition-all duration-300 group-hover:brightness-110"
+              className="h-12 w-24 lg:h-[60px] lg:w-48 transition-all duration-300 group-hover:brightness-110"
             />
           </div>
         </Link>
@@ -161,12 +157,13 @@ function ShoppingHeader() {
               className="w-full max-w-sm bg-white/95 backdrop-blur-md border-r-0 shadow-2xl"
             >
               <div className="py-4 lg:py-6 space-y-4 lg:space-y-6">
+                {/* <SearchInput />
                 <div className="block sm:hidden border-b border-gray-200 pb-4">
                   <h2 className="text-lg font-semibold text-gray-900 mb-3">
                     Search
                   </h2>
                   <SearchInput />
-                </div>
+                </div> */}
 
                 <div className="border-b border-gray-200 pb-4 lg:pb-6">
                   <h2 className="text-lg font-semibold text-gray-900 mb-3 lg:mb-4">
@@ -175,7 +172,7 @@ function ShoppingHeader() {
                   <MenuItems />
                 </div>
 
-                <div className="pt-2">
+                {/* <div className="pt-2">
                   <h2 className="text-lg font-semibold text-gray-900 mb-3 lg:mb-4">
                     Account
                   </h2>
@@ -192,7 +189,7 @@ function ShoppingHeader() {
                       </p>
                     </div>
                   </div>
-                </div>
+                </div> */}
               </div>
             </SheetContent>
           </Sheet>

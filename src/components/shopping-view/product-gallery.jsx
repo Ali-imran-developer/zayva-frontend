@@ -13,7 +13,7 @@ function ProductImageGallery({ productDetails }) {
         />
 
         {discount && (
-          <div className="rounded-full flex flex-col items-center justify-center absolute top-2 left-2 bg-gray-800 w-16 h-16 text-base text-white font-semibold z-20">
+          <div className="rounded-full flex items-center justify-center gap-1 text-sm absolute top-2 left-2 bg-gray-800 w-[70px] h-8 text-white font-semibold z-20">
             {discount}%
             <span>OFF</span>
           </div>

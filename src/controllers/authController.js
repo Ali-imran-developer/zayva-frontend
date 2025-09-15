@@ -60,6 +60,10 @@ class AuthController {
 
   static loginUser(payload) {
     return apiRequest("post", "/api/auth/login", payload);
+  }
+
+  static getSearchResults(keyword) {
+    return apiRequest("get", `/api/shop/search/${keyword}`);
   }  
 }
 

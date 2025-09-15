@@ -3,10 +3,6 @@ import { lazy, Suspense } from "react";
 import ProtectedRoute from "./components/common/check-auth";
 import MainLoader from "./components/common/main-loader";
 
-const AuthLayout = lazy(() => import("./components/auth/layout"));
-const AuthLogin = lazy(() => import("./pages/auth/login"));
-const AuthRegister = lazy(() => import("./pages/auth/register"));
-
 const AdminLayout = lazy(() => import("./components/admin-view/layout"));
 const AdminDashboard = lazy(() => import("./pages/admin-view/dashboard"));
 const AdminProducts = lazy(() => import("./pages/admin-view/products"));
@@ -23,13 +19,15 @@ const ShoppingLayout = lazy(() => import("./components/shopping-view/layout"));
 const ShoppingHome = lazy(() => import("./pages/shopping-view/home"));
 const ShoppingListing = lazy(() => import("./pages/shopping-view/listing"));
 const ShoppingListingDetail = lazy(() => import("./pages/shopping-view/listing-detail"));
+const ShoppingBrand = lazy(() => import("./pages/shopping-view/shopping-brand"));
 const ShoppingCheckout = lazy(() => import("./pages/shopping-view/checkout"));
 const ShoppingAccount = lazy(() => import("./pages/shopping-view/account"));
 const ShoppingBlogs = lazy(() => import("./pages/shopping-view/blogs"));
 const ShoppingBlogsDetail = lazy(() => import("./components/shopping-view/blog-detail"));
 const ShoppingContact = lazy(() => import("./pages/shopping-view/contact"));
-const PaypalReturnPage = lazy(() => import("./pages/shopping-view/paypal-return"));
-const PaymentSuccessPage = lazy(() => import("./pages/shopping-view/payment-success"));
+const ShoppingReturnPolicy = lazy(() => import("./pages/shopping-view/return-policy"));
+const ShoppingPrivacyPolicy = lazy(() => import("./pages/shopping-view/privacy-policy"));
+const ShoppingAbout = lazy(() => import("./pages/shopping-view/about"));
 const SearchProducts = lazy(() => import("./pages/shopping-view/search"));
 
 const UnauthPage = lazy(() => import("./pages/unauth-page"));
@@ -61,13 +59,15 @@ function App() {
             <Route index element={<ShoppingHome />} />
             <Route path="shop/listing" element={<ShoppingListing />} />
             <Route path="shop/listing/:id" element={<ShoppingListingDetail />} />
+            <Route path="shop/:productType" element={<ShoppingBrand />} />
             <Route path="shop/checkout" element={<ShoppingCheckout />} />
             <Route path="shop/account" element={<ShoppingAccount />} />
             <Route path="shop/blogs" element={<ShoppingBlogs />} />
             <Route path="shop/blogs/:id" element={<ShoppingBlogsDetail />} />
             <Route path="shop/contact" element={<ShoppingContact />} />
-            {/* <Route path="shop/paypal-return" element={<PaypalReturnPage />} />
-            <Route path="shop/payment-success" element={<PaymentSuccessPage />} /> */}
+            <Route path="shop/return-policy" element={<ShoppingReturnPolicy />} />
+            <Route path="shop/privacy-policy" element={<ShoppingPrivacyPolicy />} />
+            <Route path="shop/about" element={<ShoppingAbout />} />
             <Route path="shop/search" element={<SearchProducts />} />
           </Route>
 

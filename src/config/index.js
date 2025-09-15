@@ -58,7 +58,11 @@ export const addProductFormElements = [
     name: "productType",
     componentType: "select",
     options: [
-      { id: "newarrival", label: "New Arrival" },
+      { id: "new-arrival", label: "New Arrival" },
+      { id: "premium-collection", label: "Premium Collection" },
+      { id: "saya-essence", label: "Saya Essence" },
+      { id: "emmboiered-three-pcs", label: "Emmboiered 3 pcs" },
+      { id: "summer-collection", label: "Summer Collection" },
       { id: "other", label: "Other" },
     ],
   },
@@ -114,27 +118,67 @@ export const addProductFormElements = [
   },
 ];
 
-export const shoppingViewHeaderMenuItems = [
+export const menuItems = [
   {
     id: "home",
     label: "Home",
     path: "/",
   },
   {
-    id: "products",
-    label: "Products",
-    path: "/shop/listing",
+    id: "new-arrival",
+    label: "New Arrival",
+    path: "/shop/new-arrival",
   },
   {
-    id: "blogs",
-    label: "Blogs",
-    path: "/shop/blogs",
+    id: "premium-collection",
+    label: "Premium Collection",
+    path: "/shop/premium-collection",
   },
   {
-    id: "contact",
-    label: "Contact",
-    path: "/shop/contact",
+    id: "saya-essence",
+    label: "Saya Essence",
+    path: "/shop/saya-essence",
   },
+  {
+    id: "emmboiered-three-pcs",
+    label: "Emmboiered 3 pcs",
+    path: "/shop/emmboiered-three-pcs",
+  },
+  {
+    id: "summer-collection",
+    label: "Summer Collection",
+    path: "/shop/summer-collection",
+  },
+  {
+    id: "refund-return-policy",
+    label: "Refund & Return Policy",
+    path: "/shop/return-policy",
+  },
+  {
+    id: "privacy-policy",
+    label: "Privacy Policy",
+    path: "/shop/privacy-policy",
+  },
+  {
+    id: "about",
+    label: "About",
+    path: "/shop/about",
+  },
+  // {
+  //   id: "products",
+  //   label: "Products",
+  //   path: "/shop/listing",
+  // },
+  // {
+  //   id: "blogs",
+  //   label: "Blogs",
+  //   path: "/shop/blogs",
+  // },
+  // {
+  //   id: "contact",
+  //   label: "Contact",
+  //   path: "/shop/contact",
+  // },
 ];
 
 export const categoryOptionsMap = {

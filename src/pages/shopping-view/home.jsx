@@ -13,6 +13,10 @@ import { useCart } from "@/hooks/useCart";
 import { WhatsAppButton } from "@/components/common/whatsapp";
 import AuthController from "@/controllers/authController";
 import ShoppingProductSkeleton from "@/components/shopping-view/products-skeleton";
+import FAQs from "@/components/shopping-view/faq";
+import EmailSubscription from "@/components/shopping-view/footer-card";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 function ShoppingHome() {
   const { isLoadingProducts, handleGetProducts, handleGetProductsDetail } = useProducts();
@@ -60,8 +64,14 @@ function ShoppingHome() {
 
   }, [])
 
-  const newArrivalProducts = ensureArray(productList)?.filter((p) => p?.productType === "newarrival");
-  const otherProducts = ensureArray(productList)?.filter((p) => p?.productType !== "newarrival");
+  const groupedProducts = ensureArray(productList)?.reduce((acc, product) => {
+    const type = product?.productType || "others";
+    if (!acc[type]) {
+      acc[type] = [];
+    }
+    acc[type].push(product);
+    return acc;
+  }, {});
 
   const renderProducts = (products) => {
     if (isLoadingProducts) {
@@ -83,7 +93,7 @@ function ShoppingHome() {
     }
 
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {ensureArray(products)?.map((productItem, index) => (
           <ShoppingProductTile
             key={productItem?._id || index}
@@ -103,33 +113,38 @@ function ShoppingHome() {
       <WhatsAppButton phoneNumber="03271726674" className="fixed bottom-5 right-5 z-50" />
       <Banners featureImageList={featureImageList} />
 
-      <section className="py-6">
-        <div className="container mx-auto px-4">
-          {!isLoadingProducts && (
-            <h4 className="text-2xl font-bold text-start mb-8 text-[#232323]">
-              New Arrivals
-            </h4>
-          )}
-          {renderProducts(newArrivalProducts)}
-        </div>
-      </section>
+      {Object.entries(groupedProducts).map(([type, products]) => (
+        <section key={type} className="py-6">
+          <div className="">
+            {!isLoadingProducts && (
+              <h4 className="text-4xl font-semibold py-6 text-center cursor-pointer mb-8 uppercase bg-black text-white">
+                {type.replace("-", " ")}
+              </h4>
+            )}
+            <div className="container mx-auto px-4">
+              {renderProducts(products)}
+            </div>
+            {!isLoadingProducts && (
+              <Link to={`/shop/${type}`} className="text-center flex items-center justify-center">
+                <Button className="uppercase w-40 h-12 mt-4 rounded-none text-lg border-gray-800" variant="outline">
+                  View All
+                </Button>
+              </Link>
+            )}
+          </div>
+        </section>
+      ))}
 
-      <section className="py-2">
-        <div className="container mx-auto px-4">
-          {!isLoadingProducts && (
-            <h4 className="text-2xl font-bold text-start mb-4 text-[#232323]">
-              Printed Brands Suits
-            </h4>
-          )}
-          {renderProducts(otherProducts)}
-        </div>
-      </section>
+      <FAQs />
+      <EmailSubscription />
 
-      <ProductDetailsDialog
-        open={openDetailsDialog}
-        setOpen={setOpenDetailsDialog}
-        productDetails={ensureObject(productDetails)}
-      />
+      {openDetailsDialog && (
+        <ProductDetailsDialog 
+          open={openDetailsDialog} 
+          setOpen={setOpenDetailsDialog} 
+          productDetails={ensureObject(productDetails)}
+        />
+      )}
     </div>
   );
 }

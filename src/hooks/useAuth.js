@@ -2,9 +2,12 @@ import { useState } from "react";
 import AuthController from "../controllers/authController";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { setSearch } from "@/stores/slices/auth-slice";
+import { useDispatch } from "react-redux";
 
 export const useAuth = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [isLoading, setLoading] = useState(false);
 
   const handlePrimaryLogin = async (payload) => {
@@ -65,10 +68,21 @@ export const useAuth = () => {
     }
   };
 
+  const handleGetSearch = async (keyword) => {
+    try {
+      const response = await AuthController.getSearchResults(keyword);
+      dispatch(setSearch(response?.data));
+      return response;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return {
     isLoading,
     handlePrimaryLogin,
     handleLogout,
     handlePrimarySignUp,
+    handleGetSearch,
   }
 };

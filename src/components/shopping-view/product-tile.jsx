@@ -29,7 +29,7 @@ function ShoppingProductTile({
           <img
             src={product?.images?.[0] ?? "/product-placeholder.jpg"}
             alt="product-image"
-            className={`w-full h-[300px] object-cover transition-opacity duration-500 ease-in-out group-hover:opacity-0 cursor-pointer ${
+            className={`w-full h-[200px] sm:h-[300px] md:h-[300px] lg:h-[300px] object-cover transition-opacity duration-500 ease-in-out group-hover:opacity-0 cursor-pointer ${
               imageLoading ? 'opacity-0 absolute inset-0' : 'opacity-100'
             }`}
             onLoad={() => setImageLoading(false)}
@@ -44,7 +44,7 @@ function ShoppingProductTile({
               <img
                 src={product?.images?.[1]}
                 alt="product-image-hover"
-                className={`w-full h-[300px] object-cover absolute inset-0 transition-opacity duration-700 ease-in-out delay-150 group-hover:opacity-100 ${
+                className={`w-full h-[200px] sm:h-[300px] md:h-[300px] lg:h-[300px] object-cover absolute inset-0 transition-opacity duration-700 ease-in-out delay-150 group-hover:opacity-100 ${
                   hoverImageLoading || imageLoading ? 'opacity-0' : 'opacity-0 group-hover:opacity-100'
                 }`}
                 onLoad={() => setHoverImageLoading(false)}
@@ -55,7 +55,7 @@ function ShoppingProductTile({
             <img
               src={product?.images?.[0]}
               alt="product-image-hover"
-              className={`w-full h-[300px] object-cover absolute inset-0 transition-opacity duration-700 ease-in-out delay-150 ${
+              className={`w-full h-[200px] sm:h-[300px] md:h-[300px] lg:h-[300px] object-cover absolute inset-0 transition-opacity duration-700 ease-in-out delay-150 ${
                 imageLoading ? 'opacity-0' : 'opacity-0 group-hover:opacity-100'
               }`}
             />
@@ -63,7 +63,7 @@ function ShoppingProductTile({
         </Link>
 
         {discount && (
-          <div className="rounded-full flex flex-col items-center justify-center absolute top-2 left-2 bg-gray-800 w-16 h-16 text-base text-white font-semibold z-20">
+          <div className="rounded-full flex items-center justify-center gap-1 text-sm absolute top-2 left-2 bg-green-600 w-[70px] h-8 text-white font-semibold z-20">
             {discount}%
             <span>OFF</span>
           </div>
@@ -124,15 +124,8 @@ function ShoppingProductTile({
             </TooltipProvider>
           </div>
 
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full pointer-events-auto">
-            <Button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                handleAddtoCart(product._id, 1);
-              }}
-              className="bg-white text-black border border-black w-full rounded-none shadow-lg hover:bg-black hover:text-white transform translate-y-10 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-700 ease-in-out delay-150"
-            >
+          <div className="absolute bottom-0 w-full">
+            <Button onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleAddtoCart(product._id, 1);}} className="bg-black text-white border border-black w-full rounded-none shadow-lg">
               {isLoading ? <Loading /> : "ADD TO CART"}
             </Button>
           </div>
@@ -147,15 +140,11 @@ function ShoppingProductTile({
         </Link>
 
         <div className="flex justify-center gap-5 items-center mb-2">
-          <span
-            className={`${
-              product?.salePrice > 0 ? "line-through" : ""
-            } text-sm font-bold text-gray-600`}
-          >
+          <span className={`${product?.salePrice > 0 ? "line-through" : ""} text-sm font-bold text-gray-600`}>
             Rs.{formatPrice(product?.price) ?? 0}
           </span>
           {product?.salePrice > 0 && (
-            <span className="text-sm font-bold text-[#becc13]">
+            <span className="text-sm font-bold text-green-600">
               Rs.{formatPrice(product?.salePrice) ?? 0}
             </span>
           )}

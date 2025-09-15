@@ -2,7 +2,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import ProductsController from "@/controllers/productsController";
-import { setProducts, setProductsDetail } from "@/stores/slices/products-slice";
+import { setProducts, setProductsBrand, setProductsDetail } from "@/stores/slices/products-slice";
 import createSearchParamsHelper from "@/helper-functions/use-paramHelper";
 
 export const useProducts = () => {
@@ -49,10 +49,25 @@ export const useProducts = () => {
     }
   };
 
+  const handleGetProductBrand = async (productType) => {
+    try {
+      setIsLoading(true);
+      const response = await ProductsController.getProductsBrand(productType);
+      dispatch(setProductsBrand(response?.data));
+      return response;
+    } catch (error) {
+      console.log("Error in productsDetail:", error);
+      toast.error(error?.message);
+    }finally{
+      setIsLoading(false);
+    }
+  };
+
   return {
     isLoading,
     isLoadingProducts,
     handleGetProducts,
     handleGetProductsDetail,
+    handleGetProductBrand,
   }
 };
