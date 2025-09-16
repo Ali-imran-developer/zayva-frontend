@@ -4,6 +4,7 @@ const initialState = {
   productList: [],
   productDetails: null,
   productsBrand: [],
+  productsBrandLength: 0,
 };
 
 export const ProductsSlice = createSlice({
@@ -17,7 +18,8 @@ export const ProductsSlice = createSlice({
       state.productDetails = action.payload;
     },
     setProductsBrand: (state, action) => {
-      state.productsBrand = action.payload;
+      state.productsBrand = action.payload.data;
+      state.productsBrandLength = action.payload.length;
     },
   },
 });

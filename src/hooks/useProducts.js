@@ -49,11 +49,11 @@ export const useProducts = () => {
     }
   };
 
-  const handleGetProductBrand = async (productType) => {
+  const handleGetProductBrand = async (productType, { page, limit }) => {
     try {
       setIsLoading(true);
-      const response = await ProductsController.getProductsBrand(productType);
-      dispatch(setProductsBrand(response?.data));
+      const response = await ProductsController.getProductsBrand(productType, { page, limit });
+      dispatch(setProductsBrand(response));
       return response;
     } catch (error) {
       console.log("Error in productsDetail:", error);

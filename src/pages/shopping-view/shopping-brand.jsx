@@ -1,28 +1,40 @@
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
 import ShoppingProductSkeleton from "@/components/shopping-view/products-skeleton";
+import { Button } from "@/components/ui/button";
 import AuthController from "@/controllers/authController";
 import { ensureArray } from "@/helper-functions/use-formater";
 import { useCart } from "@/hooks/useCart";
 import { useProducts } from "@/hooks/useProducts";
+import { useQueryParams } from "@/hooks/useQueryParams";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import Pagination from "./pagination";
 
 const ShoppingBrand = () => {
   const { productType } = useParams();
   const { isLoading, handleGetProductBrand, handleGetProductsDetail } = useProducts();
-  const { productsBrand } = useSelector((state) => state.Products);
+  const { productsBrand, productsBrandLength } = useSelector((state) => state.Products);
   const { handleAddToCart, handleGetCarts } = useCart();
   const { productDetails } = useSelector((state) => state.Products);
   const session = AuthController.getSession();
   const user = session?.user;
   const [loading, setIsLoading] = useState(false);
+  const { updateParams, params } = useQueryParams();
+  const [page, setPage] = useState(Number(params.get("page")) || 1);
+  const limit = Number(params.get("limit")) || 10;
+  const totalPages = Math.ceil(productsBrandLength / limit);
+
+  useEffect(() => {
+    updateParams({ page, limit });
+  }, [page, limit]);
 
   useEffect(() => {
     if (productType) {
-      handleGetProductBrand(productType);
+      handleGetProductBrand(productType, { page, limit });
     }
-  }, [productType]);
+  }, [productType, page, limit]);
 
   const handleAddtoCartFunc = async (getCurrentProductId, quantity) => {
     try {
@@ -81,7 +93,7 @@ const ShoppingBrand = () => {
     }
 
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {ensureArray(productsBrand)?.map((productItem, index) => (
           <ShoppingProductTile
             key={productItem?.id || index}
@@ -98,10 +110,13 @@ const ShoppingBrand = () => {
 
   return (
     <>
-      <div className="py-8 mb-6 bg-black text-white">
-        <h1 className="container mx-auto px-4 uppercase text-5xl">{productType ?? ""}</h1>
+      <div className="py-3 md:py-5 lg:py-8 mb-6 bg-black text-white">
+        <h1 className="container mx-auto px-4 uppercase text-xl md:text-2xl lg:text-5xl">{productType ?? ""}</h1>
       </div>
-      <div className="container mx-auto px-4 py-6">{renderContent()}</div>
+      <div className="container mx-auto px-4 py-6">
+        {renderContent()}
+        <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+      </div>
     </>
   );
 };

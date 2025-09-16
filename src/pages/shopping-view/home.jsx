@@ -64,26 +64,7 @@ function ShoppingHome() {
 
   }, [])
 
-  const groupedProducts = ensureArray(productList)?.reduce((acc, product) => {
-    const type = product?.productType || "others";
-    if (!acc[type]) {
-      acc[type] = [];
-    }
-    acc[type].push(product);
-    return acc;
-  }, {});
-
   const renderProducts = (products) => {
-    if (isLoadingProducts) {
-      return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {Array.from({ length: 8 }).map((_, index) => (
-            <ShoppingProductSkeleton key={index} />
-          ))}
-        </div>
-      );
-    }
-
     if (!products?.length) {
       return (
         <div className="flex items-center justify-center h-64 w-full text-gray-500 text-lg">
@@ -113,27 +94,33 @@ function ShoppingHome() {
       <WhatsAppButton phoneNumber="03271726674" className="fixed bottom-5 right-5 z-50" />
       <Banners featureImageList={featureImageList} />
 
-      {Object.entries(groupedProducts).map(([type, products]) => (
-        <section key={type} className="py-6">
-          <div className="">
-            {!isLoadingProducts && (
-              <h4 className="text-4xl font-semibold py-6 text-center cursor-pointer mb-8 uppercase bg-black text-white">
+      {isLoadingProducts ? (
+        <div className="container mx-auto px-4 py-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {Array.from({ length: 8 }).map((_, index) => (
+              <ShoppingProductSkeleton key={index} />
+            ))}
+          </div>
+        </div>
+      ) : (
+        Object.entries(productList || {}).map(([type, products]) => (
+          <section key={type} className="py-2 md:py-4 lg:py-6">
+            <div>
+              <h4 className="text-xl md:text-2xl lg:text-4xl font-semibold py-6 text-center cursor-pointer mb-8 uppercase bg-black text-white">
                 {type.replace("-", " ")}
               </h4>
-            )}
-            <div className="container mx-auto px-4">
-              {renderProducts(products)}
-            </div>
-            {!isLoadingProducts && (
+              <div className="container mx-auto px-4">
+                {renderProducts(products)}
+              </div>
               <Link to={`/shop/${type}`} className="text-center flex items-center justify-center">
                 <Button className="uppercase w-40 h-12 mt-4 rounded-none text-lg border-gray-800" variant="outline">
                   View All
                 </Button>
               </Link>
-            )}
-          </div>
-        </section>
-      ))}
+            </div>
+          </section>
+        ))
+      )}
 
       <FAQs />
       <EmailSubscription />

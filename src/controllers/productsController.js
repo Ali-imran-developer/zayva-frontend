@@ -7,8 +7,8 @@ class ProductsController {
   static getProductsDetail(id) {
     return apiRequest("get", `/api/shop/products/get/${id}`);
   }
-  static getProductsBrand(productType) {
-    return apiRequest("get", `/api/products/get/${productType}`);
+  static getProductsBrand(productType, { page, limit }) {
+    return apiRequest("get", `/api/products/get/${productType}`, null, { params: { page, limit } });
   }
 }
 

@@ -11,6 +11,10 @@ import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { Loader } from "lucide-react";
 import Loading from "../ui/loader";
+import { useBrands } from "@/hooks/useBrands";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { ensureArray } from "@/helper-functions/use-formater";
 
 function CommonForm({
   formControls,
@@ -21,9 +25,28 @@ function CommonForm({
   isLoading,
   isBtnDisabled,
 }) {
+  const { isLoading: isBrandsLoading, handleGetBrands } = useBrands();
+  const { brandsList } = useSelector((state) => state.Brands);
+
+  useEffect(() => {
+    const hasBrandSelect = formControls.some(
+      (control) =>
+        control.componentType === "select" && control.name === "brand"
+    );
+    if (hasBrandSelect) {
+      handleGetBrands();
+    }
+  }, []);
+
   function renderInputsByComponentType(getControlItem) {
     let element = null;
     const value = formData[getControlItem.name] || "";
+
+    const options = getControlItem?.componentType === "select" && getControlItem?.name === "brand"
+      ? ensureArray(brandsList)?.map((item) => ({
+        id: item?.id,
+        label: item?.label,
+    })) : getControlItem?.options || [];
 
     switch (getControlItem.componentType) {
       case "input":
@@ -59,13 +82,16 @@ function CommonForm({
               <SelectValue placeholder={getControlItem.label} />
             </SelectTrigger>
             <SelectContent>
-              {getControlItem.options && getControlItem.options.length > 0
-                ? getControlItem.options.map((optionItem) => (
-                    <SelectItem key={optionItem.id} value={optionItem.id}>
-                      {optionItem.label}
-                    </SelectItem>
-                  ))
-                : null}
+              {ensureArray(options)?.length > 0 ? (ensureArray(options)?.map((optionItem) => (
+                <SelectItem key={optionItem?.id} value={optionItem?.id}>
+                  {optionItem?.label}
+                </SelectItem>
+                ))
+              ) : (
+                <SelectItem disabled value="no-options">
+                  {isBrandsLoading && getControlItem.name === "brand" ? "Loading brands..." : "No options"}
+                </SelectItem>
+              )}
             </SelectContent>
           </Select>
         );
