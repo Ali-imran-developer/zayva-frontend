@@ -1,6 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as Yup from "yup";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
@@ -13,6 +12,7 @@ import toast from "react-hot-toast";
 import { useOrders } from "@/hooks/useOrders";
 import { useCart } from "@/hooks/useCart";
 import AuthController from "@/controllers/authController";
+import createOrderSchema from "@/validators/create-order-schema";
 
 function ShoppingCheckout() {
   const { cartItems } = useSelector((state) => state.Cart);
@@ -28,18 +28,6 @@ function ShoppingCheckout() {
     sum + (item?.salePrice > 0 ? item.salePrice : item.price) * item.quantity, 0) : 0;
   const shipping = subtotal > 5000 ? 0 : 200;
   const totalPrice = subtotal + shipping;
-
-  const validationSchema = Yup.object().shape({
-    name: Yup.string().required("Name is required"),
-    phone: Yup.string()
-    .required("Phone is required")
-    .matches(/^[0-9]+$/, "Phone number must contain only digits")
-    .min(11, "Phone number must be at least 10 digits")
-    .max(13, "Phone number must be at most 15 digits"),
-    city: Yup.string().required("City is required"),
-    address: Yup.string().required("Address is required"),
-    paymentMethod: Yup.string().required("Payment method is required"),
-  });
 
   const initialValues = {
     name: "",
@@ -88,7 +76,9 @@ function ShoppingCheckout() {
         } else {
           handleGetCarts({ guestId });
         }
-        navigate("/");
+        if (result?.data) {
+          navigate("/shop/thank-you", { state: result.data });
+        }
       }
     }catch(error){
       console.log(error);
@@ -128,7 +118,7 @@ function ShoppingCheckout() {
 
         <Formik
           initialValues={initialValues}
-          validationSchema={validationSchema}
+          validationSchema={createOrderSchema}
           onSubmit={handleSubmit}
         >
           {({ values, setFieldValue, errors, touched }) => (

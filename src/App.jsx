@@ -28,7 +28,7 @@ const ShoppingContact = lazy(() => import("./pages/shopping-view/contact"));
 const ShoppingReturnPolicy = lazy(() => import("./pages/shopping-view/return-policy"));
 const ShoppingPrivacyPolicy = lazy(() => import("./pages/shopping-view/privacy-policy"));
 const ShoppingAbout = lazy(() => import("./pages/shopping-view/about"));
-const SearchProducts = lazy(() => import("./pages/shopping-view/search"));
+const ShoppingThankYou = lazy(() => import("./pages/shopping-view/thank-you"));
 
 const UnauthPage = lazy(() => import("./pages/unauth-page"));
 const NotFound = lazy(() => import("./pages/not-found"));
@@ -68,7 +68,7 @@ function App() {
             <Route path="shop/return-policy" element={<ShoppingReturnPolicy />} />
             <Route path="shop/privacy-policy" element={<ShoppingPrivacyPolicy />} />
             <Route path="shop/about" element={<ShoppingAbout />} />
-            <Route path="shop/search" element={<SearchProducts />} />
+            <Route path="shop/thank-you" element={<ShoppingThankYou />} />
           </Route>
 
           <Route path="/unauth-page" element={<UnauthPage />} />
