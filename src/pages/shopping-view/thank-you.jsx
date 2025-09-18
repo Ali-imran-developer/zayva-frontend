@@ -9,6 +9,7 @@ import {
   Phone,
   User,
   Star,
+  Loader2,
 } from "lucide-react";
 import {
   Dialog,
@@ -21,7 +22,11 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ensureArray } from "@/helper-functions/use-formater";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import ReviewSchema from "@/validators/review-schema";
+import { ErrorMessage, Field, Form, Formik } from "formik";
+import { useReviews } from "@/hooks/useReview";
 
+const mapApiKey = import.meta.env.VITE_GOOGLE_API_KEY;
 const ThankYou = () => {
   const location = useLocation();
   const orderData = location?.state;
@@ -29,12 +34,13 @@ const ThankYou = () => {
   const longitude = 73.135;
   const navigate = useNavigate();
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [selectedStars, setSelectedStars] = useState(0);
   const [showReviewDialog, setShowReviewDialog] = useState(false);
-  const apiKey = "AIzaSyByPIUZb_MfpjfpINAgOPoy95ifvEo0yLk";
+  const { isLoading, handleAddUserReview } = useReviews();
 
   useEffect(() => {
     const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${mapApiKey}&callback=initMap`;
     script.async = true;
     script.defer = true;
     window.initMap = () => {
@@ -99,10 +105,13 @@ const ThankYou = () => {
 
   useEffect(() => {
     if (location.pathname === "/shop/thank-you") {
-      const timer = setTimeout(() => {
-        setShowReviewDialog(true);
-      }, 4000);
-      return () => clearTimeout(timer);
+      const alreadyReviewed = localStorage.getItem("review");
+      if (!alreadyReviewed) {
+        const timer = setTimeout(() => {
+          setShowReviewDialog(true);
+        }, 4000);
+        return () => clearTimeout(timer);
+      }
     }
   }, [location.pathname]);
 
@@ -320,7 +329,7 @@ const ThankYou = () => {
       </div>
 
       <Dialog open={showReviewDialog} onOpenChange={setShowReviewDialog}>
-        <DialogContent className="sm:max-w-md fixed bottom-4 right-4 w-full sm:w-[400px] rounded-2xl shadow-2xl">
+        <DialogContent className="sm:max-w-md min-h-[400px] max-h-[450px] fixed bottom-4 right-4 w-full sm:w-[400px] rounded-2xl shadow-2xl">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold flex items-center gap-2">
               <Star className="w-5 h-5 text-yellow-500" />
@@ -331,23 +340,67 @@ const ThankYou = () => {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="flex flex-col gap-2 mt-4">
-            <div className="flex gap-2">
-              {[1, 2, 3, 4, 5]?.map((star) => (
-                <Star key={star} className="w-6 h-6 text-gray-300 hover:text-yellow-500 cursor-pointer transition" />
-              ))}
-            </div>
-            <Input />
-          </div>
+            <Formik
+              initialValues={{ name: "", review: 0, message: "" }}
+              validationSchema={ReviewSchema}
+              onSubmit={async (values, { resetForm }) => {
+                try {
+                  console.log("Review Submitted:", values);
+                  await handleAddUserReview(values);
+                  localStorage.setItem("review", "true");
+                  setShowReviewDialog(false);
+                  resetForm();
+                } catch (error) {
+                  console.log(error);
+                }
+              }}
+            >
+            {({ setFieldValue, values, isValid, errors, touched }) => (
+              <Form className="flex flex-col gap-4 mt-4">
+                <div>
+                  <Field as={Input} name="name" placeholder="Enter Your Name" 
+                    className={`${errors?.name && touched?.name ? "border border-red-600" : ""}`} 
+                  />
+                  <ErrorMessage name="name" component="p" className="text-red-500 text-xs mt-1" />
+                </div>
 
-          <div className="flex justify-end gap-2 mt-6 pb-4">
-            <Button variant="outline" onClick={() => setShowReviewDialog(false)}>
-              Later
-            </Button>
-            <Button onClick={() => setShowReviewDialog(false)}>
-              Submit Review
-            </Button>
-          </div>
+                <div className="flex gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => {
+                    const isActive = star <= values.review;
+                    return (
+                      <Star
+                        key={star}
+                        className="w-6 h-6 cursor-pointer transition"
+                        fill={isActive ? "#eab308" : "none"}
+                        stroke={isActive ? "#eab308" : "#d1d5db"}
+                        onClick={() => {
+                          setSelectedStars(star);
+                          setFieldValue("review", star);
+                        }}
+                      />
+                    );
+                  })}
+                </div>
+                <ErrorMessage name="review" component="p" className="text-red-500 text-xs mt-1" />
+
+                <div>
+                  <Field as={Input} name="message" placeholder="Enter Message"
+                    className={`${errors?.message && touched?.message ? "border border-red-600" : ""}`}
+                  />
+                  <ErrorMessage name="message" component="p" className="text-red-500 text-xs mt-1" />
+                </div>
+
+                <div className="flex justify-end gap-2 mt-6 pb-4">
+                  <Button type="button" variant="outline" onClick={() => setShowReviewDialog(false)}>
+                    Later
+                  </Button>
+                  <Button type="submit" disabled={!isValid}>
+                    {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : "Submit Review"}
+                  </Button>
+                </div>
+              </Form>
+            )}
+          </Formik>
         </DialogContent>
       </Dialog>
     </>

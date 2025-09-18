@@ -10,6 +10,12 @@ class ReviewsController {
   static getAllReviews() {
     return apiRequest("get", `/api/shop/review/get`);
   }
+  static addUserReviews(values) {
+    return apiRequest("post", `/api/review/create`, values);
+  }
+  static getAllUserReviews() {
+    return apiRequest("get", `/api/review/get`);
+  }
 }
 
 export default ReviewsController;

@@ -6,7 +6,7 @@ import { ensureArray, formatPrice } from "@/helper-functions/use-formater";
 import { useState } from "react";
 import Loading from "../ui/loader";
 
-function UserCartWrapper({ cartItems, setOpenCartSheet }) {
+function UserCartWrapper({ isLoading, cartItems, setOpenCartSheet }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
@@ -30,7 +30,7 @@ function UserCartWrapper({ cartItems, setOpenCartSheet }) {
 
       <div className="flex-1 mt-8 space-y-4 overflow-y-auto">
         {ensureArray(cartItems)?.map((item, index) => (
-          <UserCartItemsContent cartItem={item} key={index} />
+          <UserCartItemsContent isLoading={isLoading} cartItem={item} key={index} />
         ))}
       </div>
 

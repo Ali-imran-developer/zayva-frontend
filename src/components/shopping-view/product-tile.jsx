@@ -124,7 +124,7 @@ function ShoppingProductTile({
             </TooltipProvider>
           </div>
 
-          <div className="absolute bottom-0 w-full">
+          <div className="absolute bottom-0 w-full pointer-events-auto">
             <Button onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleAddtoCart(product._id, 1);}} className="bg-black text-white border border-black w-full rounded-none shadow-lg">
               {isLoading ? <Loading /> : "ADD TO CART"}
             </Button>

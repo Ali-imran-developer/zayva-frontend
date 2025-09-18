@@ -6,6 +6,7 @@ import {
   Phone,
   ShoppingBasket,
   Star,
+  StarOffIcon,
   User2,
 } from "lucide-react";
 import { Fragment } from "react";
@@ -55,6 +56,12 @@ const adminSidebarMenuItems = [
     label: "Contacts",
     path: "/admin/contact",
     icon: <Phone />,
+  },
+  {
+    id: "webReviews",
+    label: "Website Reviews",
+    path: "/admin/web-reviews",
+    icon: <StarOffIcon />,
   },
 ];
 

@@ -4,8 +4,8 @@ class AdminProductsController {
   static addNewProduct(payload) {
     return apiRequest("post", `/api/admin/products/add`, payload);
   }
-  static fetchAllProducts() {
-    return apiRequest("get", `/api/admin/products/get`);
+  static fetchAllProducts({ search, page, limit }) {
+    return apiRequest("get", `/api/admin/products/get?search=${search}&page=${page}&limit=${limit}`);
   }
   static editProduct({ id, formData }) {
     console.log("formData in controller: ", formData);

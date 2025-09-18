@@ -2,6 +2,7 @@ import ProductImageUpload from "@/components/admin-view/image-upload";
 import AdminProductTile from "@/components/admin-view/product-tile";
 import CommonForm from "@/components/common/form";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import Loading from "@/components/ui/loader";
 import {
   Sheet,
@@ -12,6 +13,7 @@ import {
 import { addProductFormElements } from "@/config";
 import { ensureArray } from "@/helper-functions/use-formater";
 import { useAdminProducts } from "@/hooks/useAdminProducts";
+import { X } from "lucide-react";
 import { Fragment, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
@@ -36,12 +38,24 @@ function AdminProducts() {
   const [uploadedImageUrl, setUploadedImageUrl] = useState([]);
   const [imageLoadingState, setImageLoadingState] = useState(false);
   const [currentEditedId, setCurrentEditedId] = useState(null);
-  const { productList } = useSelector((state) => state.AdminProducts);
+  const { productList, totalProducts } = useSelector((state) => state.AdminProducts);
   const { isLoadingProducts, isAddingProducts, handleGetProducts, handleDeleteProducts, handleAddProducts, handleUpdateProducts } = useAdminProducts();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const limit = 12;
+  const totalPages = Math.ceil(totalProducts / limit);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setPage(1);
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
 
   const onSubmit = async (event) => {
     event.preventDefault();
-    console.log("formData", formData);
     try {
       if (currentEditedId !== null) {
         const response = await handleUpdateProducts({ id: currentEditedId, formData });
@@ -80,13 +94,28 @@ function AdminProducts() {
   }
 
   useEffect(() => {
-    handleGetProducts();
+    handleGetProducts({ search: debouncedSearch, page, limit });
 
-  }, []);
+  }, [debouncedSearch, page]);
 
   return (
     <Fragment>
-      <div className="mb-5 w-full flex justify-end">
+      <div className="mb-5 w-full flex justify-between">
+        <div className="relative w-72 max-w-full">
+          <Input
+            className="w-full pr-10"
+            placeholder="Search Products..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          {searchTerm && (
+            <X
+              className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500 hover:text-black"
+              size={18}
+              onClick={() => setSearchTerm("")}
+            />
+          )}
+        </div>
         <Button onClick={() => setOpenCreateProductsDialog(true)}>
           Add New Product
         </Button>
@@ -96,6 +125,7 @@ function AdminProducts() {
           <Loading className="bg-black" />
         </div>
       ) : (
+        <>
         <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
           {ensureArray(productList) && ensureArray(productList)?.length > 0 ? (
             ensureArray(productList)?.map((productItem) => (
@@ -114,6 +144,28 @@ function AdminProducts() {
             </div>
           )}
         </div>
+          {totalPages > 1 && (
+            <div className="flex justify-center items-center gap-4 mt-6">
+              <Button
+                variant="outline"
+                disabled={page === 1}
+                onClick={() => setPage((prev) => prev - 1)}
+              >
+                Previous
+              </Button>
+              <span className="text-sm">
+                Page {page} of {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                disabled={page === totalPages}
+                onClick={() => setPage((prev) => prev + 1)}
+              >
+                Next
+              </Button>
+            </div>
+          )}
+        </>
       )}
       <Sheet open={openCreateProductsDialog}
         onOpenChange={() => {
@@ -150,6 +202,8 @@ function AdminProducts() {
           </div>
         </SheetContent>
       </Sheet>
+
+
     </Fragment>
   );
 }

@@ -25,7 +25,7 @@ function ShoppingHome() {
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const session = AuthController.getSession();
   const user = session?.user;
-  const [isLoading, setIsLoading] = useState(false);
+  const [loadingProductId, setLoadingProductId] = useState(null);
 
   const handleGetProductDetails = async (getCurrentProductId) => {
     try{
@@ -40,7 +40,7 @@ function ShoppingHome() {
 
   const handleAddtoCartFunc = async (getCurrentProductId, quantity) => {
     try {
-      setIsLoading(true);
+      setLoadingProductId(getCurrentProductId);
       const userId = user?.id;
       const guestId = !userId ? getGuestId() : null;
       const data = await handleAddToCart({ userId: userId, guestId: guestId, productId: getCurrentProductId, quantity });
@@ -55,7 +55,7 @@ function ShoppingHome() {
       console.error(error);
       toast.error(error?.message);
     } finally {
-      setIsLoading(false);
+      setLoadingProductId(null);
     }
   };
 
@@ -82,7 +82,7 @@ function ShoppingHome() {
             handleGetProductDetails={handleGetProductDetails}
             product={productItem}
             handleAddtoCart={handleAddtoCartFunc}
-            isLoading={isLoading}
+            isLoading={loadingProductId === productItem?._id}
           />
         ))}
       </div>

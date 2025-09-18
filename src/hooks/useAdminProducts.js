@@ -8,12 +8,14 @@ export const useAdminProducts = () => {
   const dispatch = useDispatch();
   const [isLoadingProducts, setLoadingProducts] = useState(false);
   const [isAddingProducts, setIsAddingProducts] = useState(false);
+  const [lastFetchParams, setLastFetchParams] = useState({ search: "", page: 1, limit: 12 });
 
-  const handleGetProducts = async () => {
+  const handleGetProducts = async ({ search, page, limit }) => {
     try {
       setLoadingProducts(true);
-      const response = await AdminProductsController.fetchAllProducts();
-      dispatch(setAdminProducts(response?.data));
+      const response = await AdminProductsController.fetchAllProducts({ search, page, limit });
+      dispatch(setAdminProducts(response));
+      setLastFetchParams({ search, page, limit });
       return response;
     } catch (error) {
       console.log("Error in products:", error);
@@ -23,13 +25,17 @@ export const useAdminProducts = () => {
     }
   };
 
+  const refetchProducts = async () => {
+    return handleGetProducts(lastFetchParams);
+  };
+
   const handleAddProducts = async (payload) => {
     try {
       setIsAddingProducts(true);
       const response = await AdminProductsController.addNewProduct(payload);
       if (response?.success) {
         toast.success(response?.message);
-        await handleGetProducts();
+        await refetchProducts();
       }
       return response;
     } catch (error) {
@@ -41,13 +47,12 @@ export const useAdminProducts = () => {
   };
 
   const handleUpdateProducts = async ({ id, formData }) => {
-    console.log("id in update product:", id);
     try {
       setIsAddingProducts(true);
       const response = await AdminProductsController.editProduct({ id, formData });
       if (response?.success) {
         toast.success(response?.message);
-        await handleGetProducts();
+        await refetchProducts();
       }
       return response;
     } catch (error) {
@@ -64,7 +69,7 @@ export const useAdminProducts = () => {
       const response = await AdminProductsController.deleteProduct(id);
       if (response?.success) {
         toast.success(response?.message);
-        await handleGetProducts();
+        await refetchProducts();
       }
       return response;
     } catch (error) {

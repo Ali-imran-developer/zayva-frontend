@@ -57,7 +57,7 @@ function HeaderRightContent() {
   const { cartItems } = useSelector((state) => state.Cart);
   const [openCartSheet, setOpenCartSheet] = useState(false);
   const [loginSheet, setLoginSheet] = useState(false);
-  const { handleGetCarts } = useCart();
+  const { isFetchingCart, handleGetCarts } = useCart();
   const navigate = useNavigate();
 
   // function handleLogout() {
@@ -107,7 +107,8 @@ function HeaderRightContent() {
           <span className="sr-only">User cart</span>
         </button>
         {openCartSheet && (
-          <UserCartWrapper 
+          <UserCartWrapper
+            isLoading={isFetchingCart}
             setOpenCartSheet={setOpenCartSheet}
             cartItems={cartItems && cartItems?.items && cartItems?.items?.length > 0 ? cartItems?.items : []}
           />

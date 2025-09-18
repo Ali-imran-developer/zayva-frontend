@@ -2,7 +2,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import ReviewsController from "@/controllers/reviewController";
-import { setAllReviews, setReview } from "@/stores/slices/review-slice";
+import { setAllReviews, setReview, setUserReviews } from "@/stores/slices/review-slice";
 
 export const useReviews = () => {
   const dispatch = useDispatch();
@@ -50,11 +50,45 @@ export const useReviews = () => {
     }
   };
 
+  const handleGetUserReviews = async () => {
+    try {
+      setLoading(true);
+      const response = await ReviewsController.getAllUserReviews();
+      if(response?.success){
+        dispatch(setUserReviews(response?.data));
+      }
+      return response;
+    } catch (error) {
+      console.log("Error in userReview:", error);
+      toast.error(error?.message);
+    }finally{
+      setLoading(false);
+    }
+  };
+
+  const handleAddUserReview = async (values) => {
+    try {
+      setLoading(true);
+      const response = await ReviewsController.addUserReviews(values);
+      if(response?.success){
+        toast.success(response?.message);
+      }
+      return response;
+    } catch (error) {
+      console.log("Error in userReview:", error);
+      toast.error(error?.message);
+    }finally{
+      setLoading(false);
+    }
+  };
+
   return {
     isLoading,
     isAddingReview,
     handleAddReview,
     handleGetReviews,
     handleGetAllReviews,
+    handleGetUserReviews,
+    handleAddUserReview,
   }
 };

@@ -14,6 +14,7 @@ const AdminFeatures = lazy(() => import("./pages/admin-view/features"));
 const AdminBlogs = lazy(() => import("./pages/admin-view/blogs"));
 const AdminBlogDetail = lazy(() => import("./components/admin-view/blog-detail"));
 const AdminContacts = lazy(() => import("./pages/admin-view/contact"));
+const AdminWebReviews = lazy(() => import("./pages/admin-view/user-reviws"));
 
 const ShoppingLayout = lazy(() => import("./components/shopping-view/layout"));
 const ShoppingHome = lazy(() => import("./pages/shopping-view/home"));
@@ -52,6 +53,7 @@ function App() {
             <Route path="blogs" element={<AdminBlogs />} />
             <Route path="blogs/:id" element={<AdminBlogDetail />} />
             <Route path="contact" element={<AdminContacts />} />
+            <Route path="web-reviews" element={<AdminWebReviews />} />
           </Route>
 
           {/* User Routes */}

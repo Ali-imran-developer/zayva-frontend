@@ -7,8 +7,9 @@ import { useCart } from "@/hooks/useCart";
 import toast from "react-hot-toast";
 import { formatPrice } from "@/helper-functions/use-formater";
 import AuthController from "@/controllers/authController";
+import UserCartItemSkeleton from "./cart-skeleton";
 
-function UserCartItemsContent({ cartItem }) {
+function UserCartItemsContent({ isLoading, cartItem }) {
   const session = AuthController.getSession();
   const user = session?.user;
   const { cartItems } = useSelector((state) => state.Cart);
@@ -16,21 +17,21 @@ function UserCartItemsContent({ cartItem }) {
   const { handleGetCarts, handleUpdateCart, handleDeleteCart } = useCart();
 
   const handleUpdateQuantity = async (getCartItem, typeOfAction) => {
-    if (typeOfAction === "plus") {
-      let getCartItems = cartItems.items || [];
-      if (getCartItems.length) {
-        const indexOfCurrentCartItem = getCartItems.findIndex((item) => item.productId === getCartItem?.productId);
-        const getCurrentProductIndex = productList.findIndex((product) => product._id === getCartItem?.productId);
-        const getTotalStock = productList[getCurrentProductIndex]?.totalStock;
-        if (indexOfCurrentCartItem > -1) {
-          const getQuantity = getCartItems[indexOfCurrentCartItem]?.quantity;
-          if (getQuantity + 1 > getTotalStock) {
-            toast.error(`Only ${getQuantity} quantity can be added for this item`);
-            return;
-          }
-        }
-      }
-    }
+    // if (typeOfAction === "plus") {
+    //   let getCartItems = cartItems.items || [];
+    //   if (getCartItems.length) {
+    //     const indexOfCurrentCartItem = getCartItems.findIndex((item) => item.productId === getCartItem?.productId);
+    //     const getCurrentProductIndex = productList.findIndex((product) => product._id === getCartItem?.productId);
+    //     const getTotalStock = productList[getCurrentProductIndex]?.totalStock;
+    //     if (indexOfCurrentCartItem > -1) {
+    //       const getQuantity = getCartItems[indexOfCurrentCartItem]?.quantity;
+    //       if (getQuantity + 1 > getTotalStock) {
+    //         toast.error(`Only ${getQuantity} quantity can be added for this item`);
+    //         return;
+    //       }
+    //     }
+    //   }
+    // }
     const userId = user?.id;
     const guestId = !userId ? getGuestId() : null;
     await handleUpdateCart({
@@ -54,6 +55,10 @@ function UserCartItemsContent({ cartItem }) {
       handleGetCarts({ guestId });
     }
   }, []);
+
+  if (isLoading) {
+    return <UserCartItemSkeleton />;
+  }
 
   return (
     <div className="flex flex-col justify-between gap-1">
